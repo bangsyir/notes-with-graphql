@@ -1,11 +1,14 @@
+import "reflect-metadata";
 import express from "express";
 import http from "http";
 import cors from "cors";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { buildSchema } from "type-graphql";
 import bodyParser from "body-parser";
-import { AppDataSource } from "./data-source";
+import { conn } from "./data-source";
+import { HelloResolver } from "./resolvers/hello";
 
 async function main() {
   const typeDefs = `#graphql
@@ -18,8 +21,10 @@ async function main() {
       hello: () => "hello",
     },
   };
+
   // initialize database
-  AppDataSource.initialize()
+  await conn
+    .initialize()
     .then(() => {
       console.log("connection is successfull");
     })
@@ -36,8 +41,10 @@ async function main() {
   // Same ApolloServer initialization as before, plus the drain plugin
   // for our httpServer
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    schema: await buildSchema({
+      resolvers: [HelloResolver],
+      validate: false,
+    }),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   // ensure we wait for our server to start
