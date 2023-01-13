@@ -1,9 +1,11 @@
-import { DataSource } from "typeorm";
-import { Note } from "./entities/Note";
-export const AppDataSource = new DataSource({
+import { DataSource, DataSourceOptions } from "typeorm";
+import { Note } from "./entity/Note";
+
+export const dataSourceOptions: DataSourceOptions = {
   type: "sqlite",
-  database: "./test.sql",
-  entities: [Note],
-  synchronize: true,
-  logging: false,
-});
+  database: "db.sqlite",
+  entities: [__dirname + "/entity/*.ts"],
+  migrations: [__dirname + "/migrations/*.ts"],
+};
+
+export const conn = new DataSource(dataSourceOptions);
