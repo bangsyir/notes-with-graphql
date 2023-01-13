@@ -8,20 +8,10 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { buildSchema } from "type-graphql";
 import bodyParser from "body-parser";
 import { conn } from "./data-source";
-import { HelloResolver } from "./resolvers/hello";
+import Note from "./schema/note";
+import NoteResolver from "./resolvers/noteResolver";
 
 async function main() {
-  const typeDefs = `#graphql
-    type Query {
-      hello: String
-    }
-  `;
-  const resolvers = {
-    Query: {
-      hello: () => "hello",
-    },
-  };
-
   // initialize database
   await conn
     .initialize()
@@ -41,10 +31,8 @@ async function main() {
   // Same ApolloServer initialization as before, plus the drain plugin
   // for our httpServer
   const server = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [HelloResolver],
-      validate: false,
-    }),
+    typeDefs: [Note],
+    resolvers: [NoteResolver],
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   // ensure we wait for our server to start
