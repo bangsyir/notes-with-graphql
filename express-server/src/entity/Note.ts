@@ -18,7 +18,7 @@ export class Note {
   @Column({ type: "varchar", nullable: false })
   description!: string;
 
-  @Column()
+  @Column({ nullable: true })
   views!: number;
 
   @CreateDateColumn({ name: "created_at" })
