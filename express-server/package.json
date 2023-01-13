@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npx tsc -w\" \"nodemon --exec ts-node src/index.ts\""
+    "dev": "concurrently \"npx tsc -w\" \"nodemon --exec ts-node src/index.ts\"",
+    "typeorm": "npx typeorm-ts-node-esm -d ./src/data-source.ts",
+    "migration:generate": "npm run typeorm -- migration:generate",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.2",
@@ -21,6 +25,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "graphql": "^16.6.0",
+    "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.1.4",
     "type-graphql": "1.2.0-rc.1",
