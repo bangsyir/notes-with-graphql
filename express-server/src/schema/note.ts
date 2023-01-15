@@ -5,6 +5,7 @@ const Note = `#graphql
     description: String
     createdAt: String
     updatedAt: String
+    deletedAt: String
   }
 
   type Query {
