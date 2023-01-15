@@ -3,11 +3,13 @@ lockfileVersion: 5.4
 specifiers:
   '@apollo/server': ^4.3.0
   '@types/body-parser': ^1.19.2
+  '@types/cookie-parser': ^1.4.3
   '@types/cors': ^2.8.13
   '@types/express': ^4.17.15
   '@types/node': ^18.11.18
   body-parser: ^1.20.1
   concurrently: ^7.6.0
+  cookie-parser: ^1.4.6
   cors: ^2.8.5
   express: ^4.18.2
   graphql: ^16.6.0
@@ -15,7 +17,6 @@ specifiers:
   reflect-metadata: ^0.1.13
   sqlite3: ^5.1.4
   ts-node: ^10.9.1
-  type-graphql: 1.2.0-rc.1
   typeorm: ^0.3.11
   typescript: ^4.9.4
 
@@ -23,17 +24,18 @@ dependencies:
   '@apollo/server': 4.3.0_graphql@16.6.0
   body-parser: 1.20.1
   concurrently: 7.6.0
+  cookie-parser: 1.4.6
   cors: 2.8.5
   express: 4.18.2
   graphql: 16.6.0
   pg: 8.8.0
   reflect-metadata: 0.1.13
   sqlite3: 5.1.4
-  type-graphql: 1.2.0-rc.1_graphql@16.6.0
   typeorm: 0.3.11_pjjafk6ajgbguvtugu7xowcele
 
 devDependencies:
   '@types/body-parser': 1.19.2
+  '@types/cookie-parser': 1.4.3
   '@types/cors': 2.8.13
   '@types/express': 4.17.15
   '@types/node': 18.11.18
@@ -393,6 +395,12 @@ packages:
     dependencies:
       '@types/node': 18.11.18
 
+  /@types/cookie-parser/1.4.3:
+    resolution: {integrity: sha512-CqSKwFwefj4PzZ5n/iwad/bow2hTCh0FlNAeWLtQM3JA/NX/iYagIpWG2cf1bQKQ2c9gU2log5VUCrn7LDOs0w==}
+    dependencies:
+      '@types/express': 4.17.15
+    dev: true
+
   /@types/cors/2.8.13:
     resolution: {integrity: sha512-RG8AStHlUiV5ysZQKq97copd2UmVYw3/pRMLefISZ3S1hK104Cwm7iLQ3fTKx+lsUH2CE8FlLaYeEA2LSeqYUA==}
     dependencies:
@@ -414,23 +422,12 @@ packages:
       '@types/qs': 6.9.7
       '@types/serve-static': 1.15.0
 
-  /@types/glob/7.2.0:
-    resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
-    dependencies:
-      '@types/minimatch': 5.1.2
-      '@types/node': 18.11.18
-    dev: false
-
   /@types/long/4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
     dev: false
 
   /@types/mime/3.0.1:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
-
-  /@types/minimatch/5.1.2:
-    resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
-    dev: false
 
   /@types/node-fetch/2.6.2:
     resolution: {integrity: sha512-DHqhlq5jeESLy19TYhLakJ07kNumXWjcDdxXsLUMJZ6ue8VZJj4kLPQVE/2mdHh3xZziNF1xppu5lwmS53HR+A==}
@@ -447,10 +444,6 @@ packages:
 
   /@types/range-parser/1.2.4:
     resolution: {integrity: sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==}
-
-  /@types/semver/7.3.13:
-    resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
-    dev: false
 
   /@types/serve-static/1.15.0:
     resolution: {integrity: sha512-z5xyF6uh8CbjAu9760KDKsH2FcDxZ2tFCsA4HIMWE6IkiYMXfVoa+4f9KX+FN0ZLsaMw1WNG2ETLA6N+/YA+cg==}
@@ -766,8 +759,21 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
+  /cookie-parser/1.4.6:
+    resolution: {integrity: sha512-z3IzaNjdwUC2olLIB5/ITd0/setiaFMLYiZJle7xg5Fe9KWAceil7xszYfHHBtDFYLSgJduS2Ty0P1uJdPDJeA==}
+    engines: {node: '>= 0.8.0'}
+    dependencies:
+      cookie: 0.4.1
+      cookie-signature: 1.0.6
+    dev: false
+
   /cookie-signature/1.0.6:
     resolution: {integrity: sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==}
+    dev: false
+
+  /cookie/0.4.1:
+    resolution: {integrity: sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==}
+    engines: {node: '>= 0.6'}
     dev: false
 
   /cookie/0.5.0:
@@ -1046,24 +1052,6 @@ packages:
     dev: false
     optional: true
 
-  /graphql-query-complexity/0.7.2_graphql@16.6.0:
-    resolution: {integrity: sha512-+VgmrfxGEjHI3zuojWOR8bsz7Ycz/BZjNjxnlUieTz5DsB92WoIrYCSZdWG7UWZ3rfcA1Gb2Nf+wB80GsaZWuQ==}
-    peerDependencies:
-      graphql: ^0.13.0 || ^14.0.0 || ^15.0.0
-    dependencies:
-      graphql: 16.6.0
-      lodash.get: 4.4.2
-    dev: false
-
-  /graphql-subscriptions/1.2.1_graphql@16.6.0:
-    resolution: {integrity: sha512-95yD/tKi24q8xYa7Q9rhQN16AYj5wPbrb8tmHGM3WRc9EBmWrG/0kkMl+tQG8wcEuE9ibR4zyOM31p5Sdr2v4g==}
-    peerDependencies:
-      graphql: ^0.10.5 || ^0.11.3 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-    dependencies:
-      graphql: 16.6.0
-      iterall: 1.3.0
-    dev: false
-
   /graphql/16.6.0:
     resolution: {integrity: sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==}
     engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
@@ -1211,19 +1199,11 @@ packages:
     dev: false
     optional: true
 
-  /iterall/1.3.0:
-    resolution: {integrity: sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==}
-    dev: false
-
   /js-yaml/4.1.0:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
     hasBin: true
     dependencies:
       argparse: 2.0.1
-    dev: false
-
-  /lodash.get/4.4.2:
-    resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
     dev: false
 
   /lodash.sortby/4.7.0:
@@ -1991,25 +1971,6 @@ packages:
 
   /tslib/2.4.1:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
-    dev: false
-
-  /type-graphql/1.2.0-rc.1_graphql@16.6.0:
-    resolution: {integrity: sha512-W1p51DN+n/zX4ilunMC6/FcyGlx/ND3hreQ0ARDhfhyR9oGtfKzQNnkHhk8uXlYm2zzyTEd1LkRHJr8bbnRlIA==}
-    engines: {node: '>= 10.13'}
-    requiresBuild: true
-    peerDependencies:
-      class-validator: '>=0.12.0'
-      graphql: ^15.5.0
-    dependencies:
-      '@types/glob': 7.2.0
-      '@types/node': 18.11.18
-      '@types/semver': 7.3.13
-      glob: 7.2.3
-      graphql: 16.6.0
-      graphql-query-complexity: 0.7.2_graphql@16.6.0
-      graphql-subscriptions: 1.2.1_graphql@16.6.0
-      semver: 7.3.8
-      tslib: 2.4.1
     dev: false
 
   /type-is/1.6.18:
