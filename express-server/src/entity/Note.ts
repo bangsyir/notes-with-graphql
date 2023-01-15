@@ -3,9 +3,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User";
 
 @Entity()
 export class Note {
@@ -20,6 +24,10 @@ export class Note {
 
   @Column({ nullable: true })
   views!: number;
+
+  @ManyToOne(() => User, (user) => user.notes, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "user_id" })
+  user!: User;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;
