@@ -30,7 +30,8 @@ const UserResolver = {
       const user = await getUserByEmail(args.email);
       if (!user) throw new Error("email or password is wrong");
 
-      res.cookie("test", "test cookie");
+      res.cookie("test", "test", { httpOnly: true, sameSite: "lax" });
+      console.log(req.cookies);
       return { status: "success", message: "successfull", user };
     },
   },
