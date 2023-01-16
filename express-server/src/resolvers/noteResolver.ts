@@ -1,9 +1,11 @@
 import { conn } from "../data-source";
 import { Note } from "../entity/Note";
+import { MyContext } from "../type";
 
 const NoteResolver = {
   Query: {
-    getNotes: async () => {
+    getNotes: async (parent: Note, args: any, { req, res }: MyContext) => {
+      console.log(req.cookies);
       const notes = await conn.manager.find(Note);
       return notes;
     },
