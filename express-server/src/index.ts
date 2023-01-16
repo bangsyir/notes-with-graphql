@@ -2,11 +2,12 @@ import "reflect-metadata";
 import express, { Response } from "express";
 import http from "http";
 import cors from "cors";
-import cookieParser from "cookie-parser";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import bodyParser from "body-parser";
+import cookieSession from "cookie-session";
+import cookieParser from "cookie-parser";
 import { conn } from "./data-source";
 import Note from "./schema/note";
 import NoteResolver from "./resolvers/noteResolver";
@@ -42,11 +43,23 @@ async function main() {
   await server.start();
 
   app.use(
+    // cookieSession({
+    //   name: "SKJDK",
+    //   secret: "wefdsfsdf",
+    //   secure: false,
+    //   httpOnly: true,
+    //   sameSite: "lax",
+    //   maxAge: 1 * 60 * 60 * 1000, // 1 hours
+    // })
+    cookieParser()
+  );
+
+  app.use(
     "/",
     cors<cors.CorsRequest>({
+      origin: ["http://localhost:4000/graphql"],
       credentials: true,
     }),
-    cookieParser(),
     bodyParser.json(),
     // expressMiddlware accept the same arguments:
     // an Apollo Server instance and optional configuration options
