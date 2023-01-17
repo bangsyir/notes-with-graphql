@@ -1,12 +1,16 @@
 import "reflect-metadata";
-import express, { Response } from "express";
+import * as dotenv from "dotenv";
+import express from "express";
 import http from "http";
 import cors from "cors";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import bodyParser from "body-parser";
-import cookieSession from "cookie-session";
+import Redis from "ioredis";
+import session from "express-session";
+import connectRedis from "connect-redis";
 import cookieParser from "cookie-parser";
 import { conn } from "./data-source";
 import Note from "./schema/note";
@@ -14,6 +18,9 @@ import NoteResolver from "./resolvers/noteResolver";
 import UserResolver from "./resolvers/userResolver";
 import User from "./schema/user";
 import { MyContext } from "./type";
+import { __prod__ } from "./constants";
+
+dotenv.config();
 
 async function main() {
   // initialize database
@@ -31,34 +38,55 @@ async function main() {
   // below, we tell apollo server to "drain" this httpserver
   // enabling our servers to shutdown gracefully
   const httpServer = http.createServer(app);
+  const RedisStore = connectRedis(session);
+  const redisClient = new Redis(process.env.REDIS_URL as string);
 
   // Same ApolloServer initialization as before, plus the drain plugin
   // for our httpServer
   const server = new ApolloServer({
     typeDefs: [Note, User],
     resolvers: [NoteResolver, UserResolver],
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      ApolloServerPluginLandingPageLocalDefault({
+        footer: false,
+        embed: false,
+      }),
+    ],
   });
   // ensure we wait for our server to start
   await server.start();
 
+  const SESSION_SECRET = process.env.SESSION_SECRET as string;
+
   app.use(
-    // cookieSession({
-    //   name: "SKJDK",
-    //   secret: "wefdsfsdf",
-    //   secure: false,
-    //   httpOnly: true,
-    //   sameSite: "lax",
-    //   maxAge: 1 * 60 * 60 * 1000, // 1 hours
-    // })
-    cookieParser()
+    session({
+      name: "nid",
+      store: new RedisStore({
+        client: redisClient as any,
+        disableTouch: false,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+        httpOnly: true,
+        sameSite: "lax",
+        secure: __prod__,
+      },
+      resave: false,
+      saveUninitialized: false,
+      secret: [SESSION_SECRET],
+    })
   );
 
   app.use(
-    "/",
+    "/graphql",
+    cookieParser(),
     cors<cors.CorsRequest>({
-      origin: ["http://localhost:4000/graphql"],
       credentials: true,
+      origin: [
+        "https://studio.apollographql.com",
+        "http://localhost:4000/graphql",
+      ],
     }),
     bodyParser.json(),
     // expressMiddlware accept the same arguments:
