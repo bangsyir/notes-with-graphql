@@ -3,7 +3,11 @@ import { conn } from "../data-source";
 import { User } from "../entity/User";
 
 export const getUserByEmail = async (email: string) => {
-  const userRepo = conn.getRepository(User);
-  const user = await userRepo.findOneBy({ email: email });
+  console.log(email);
+  const user = await conn
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .where("user.email = :email", { email: email })
+    .getOne();
   return user;
 };
