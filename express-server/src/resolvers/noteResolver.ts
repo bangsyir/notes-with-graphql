@@ -9,6 +9,14 @@ const NoteResolver = {
       const notes = await conn.manager.find(Note);
       return notes;
     },
+    getNote: async (parent: Note, args: { id: number }) => {
+      const note = await conn
+        .getRepository(Note)
+        .createQueryBuilder("note")
+        .where("note.id = :id", { id: args.id })
+        .getOne();
+      return note;
+    },
   },
   Mutation: {
     async addNote(parent: Note, args: { title: string; description: string }) {
