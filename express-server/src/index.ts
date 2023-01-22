@@ -11,7 +11,6 @@ import bodyParser from "body-parser";
 import Redis from "ioredis";
 import session from "express-session";
 import connectRedis from "connect-redis";
-import cookieParser from "cookie-parser";
 import { conn } from "./data-source";
 import Note from "./schema/note";
 import NoteResolver from "./resolvers/noteResolver";
@@ -59,34 +58,32 @@ async function main() {
 
   const SESSION_SECRET = process.env.SESSION_SECRET as string;
 
-  app.use(
-    session({
-      name: "nid",
-      store: new RedisStore({
-        client: redisClient as any,
-        disableTouch: false,
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        httpOnly: true,
-        sameSite: "lax",
-        secure: __prod__,
-      },
-      resave: false,
-      saveUninitialized: false,
-      secret: [SESSION_SECRET],
-    })
-  );
+  app.set("trust proxy", 1);
 
   app.use(
     "/graphql",
-    cookieParser(),
     cors<cors.CorsRequest>({
       credentials: true,
       origin: [
         "https://studio.apollographql.com",
         "http://localhost:4000/graphql",
       ],
+    }),
+    session({
+      name: "gassess",
+      store: new RedisStore({
+        client: redisClient as any,
+        disableTouch: false,
+      }),
+      cookie: {
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+        maxAge: 1000 * 60 * 60 * 24,
+      },
+      secret: "dsfsdfdsfsdf",
+      resave: false,
+      saveUninitialized: false,
     }),
     bodyParser.json(),
     // expressMiddlware accept the same arguments:
@@ -100,7 +97,7 @@ async function main() {
     httpServer.listen({ port: 4000 }, resolve)
   );
   // test
-  console.log(`🚀 Server ready at http://localhost:4000/`);
+  console.log(`🚀 Server ready at http://localhost:4000/graphql`);
 }
 // run entire app
 main().catch((err) => {
