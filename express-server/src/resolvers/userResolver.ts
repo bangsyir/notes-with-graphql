@@ -1,9 +1,14 @@
-import { Response } from "express";
 import { conn } from "../data-source";
 import { User } from "../entity/User";
 import { getUserByEmail } from "../handler/userHandler";
 import { MyContext } from "../type";
 import { hash } from "@node-rs/bcrypt";
+
+declare module "express-session" {
+  interface SessionData {
+    sub: string;
+  }
+}
 
 const UserResolver = {
   Mutation: {
@@ -30,15 +35,10 @@ const UserResolver = {
       { req, res }: MyContext
     ) {
       const user = await getUserByEmail(args.email);
-      console.log(user);
+
       if (!user) throw new Error("email or password is wrong");
 
-      res.cookie("test", "test", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      });
-      console.log(req.cookies);
+      req.session.sub = user.id;
       return { status: "success", message: "successfull", user };
     },
   },
