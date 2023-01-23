@@ -81,7 +81,7 @@ async function main() {
         sameSite: "none",
         maxAge: 1000 * 60 * 60 * 24,
       },
-      secret: "dsfsdfdsfsdf",
+      secret: SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
     }),
