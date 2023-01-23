@@ -1,6 +1,8 @@
-# Express server with apollo server
+# Create Note app using grapphl
 
 ### stack
-- express 
+
+- express
 - graphql + apollo server
 - typeorm
+- nextjs
