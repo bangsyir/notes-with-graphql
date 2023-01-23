@@ -89,7 +89,7 @@ async function main() {
     // expressMiddlware accept the same arguments:
     // an Apollo Server instance and optional configuration options
     expressMiddleware<MyContext>(server, {
-      context: async ({ req, res }) => ({ req, res, token: "" }),
+      context: async ({ req, res }) => ({ req, res, session: req.session }),
     })
   );
   // modified server startup
