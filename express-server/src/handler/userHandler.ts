@@ -9,3 +9,13 @@ export const getUserByEmail = async (email: string) => {
     .getOne();
   return user;
 };
+
+export const getUserById = async (userId: number) => {
+  const user = await conn
+    .getRepository(User)
+    .createQueryBuilder("user")
+    .where("user.id = :userId", { userId })
+    .getOne();
+
+  return user;
+};
