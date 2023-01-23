@@ -1,4 +1,4 @@
-# Create Note app using grapqhl
+# Create Note app using graphql
 
 ### stack
 
