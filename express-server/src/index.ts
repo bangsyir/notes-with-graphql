@@ -64,10 +64,7 @@ async function main() {
     "/graphql",
     cors<cors.CorsRequest>({
       credentials: true,
-      origin: [
-        "https://studio.apollographql.com",
-        "http://localhost:4000/graphql",
-      ],
+      origin: ["https://studio.apollographql.com", "http://localhost:3000"],
     }),
     session({
       name: "gassess",
