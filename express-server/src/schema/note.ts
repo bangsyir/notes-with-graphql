@@ -14,6 +14,7 @@ const Note = `#graphql
   }
   type Mutation {
     addNote(title: String, description:String): Note
+    updateNote(title: String, description: String): Note
   }
 `;
 export default Note;
