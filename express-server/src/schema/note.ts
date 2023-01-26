@@ -7,14 +7,21 @@ const Note = `#graphql
     updatedAt: String
     deletedAt: String
   }
+  type Response {
+    status: String,
+    message: String
+  }
 
   type Query {
     getNotes: [Note]
-    getNote(id: ID): Note
+    getNote(noteId: Int): Note
+    getDeletedNotes: [Note]
   }
   type Mutation {
     addNote(title: String, description:String): Note
-    updateNote(title: String, description: String): Note
+    updateNote(noteId: Int, title: String, description: String): Note
+    deleteNote(noteId: Int): Response
+    deleteNotePermanent(noteId: Int):Response
   }
 `;
 export default Note;
