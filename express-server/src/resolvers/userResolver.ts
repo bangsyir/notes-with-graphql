@@ -63,20 +63,12 @@ const UserResolver = {
       const user = await getUserByEmail(args.email);
       // return error if not an user
       if (!user)
-        return ErrorResponse(
-          "email or password in wrong!",
-          401,
-          "UNAUTHENTICATED"
-        );
+        return ErrorResponse("email or password in wrong!", 400, "BAD_REQUEST");
       // compare password input with user.password hash
       const verifyHash = verifySync(args.password, user.password);
       // if false return error
       if (!verifyHash)
-        return ErrorResponse(
-          "email or password in wrong!",
-          401,
-          "UNAUTHENTICATED"
-        );
+        return ErrorResponse("email or password in wrong!", 400, "BAD_REQUEST");
       // create user session and send to  cookie headers
       req.session.sub = user.id;
       // return success user
