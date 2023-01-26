@@ -36,7 +36,7 @@ const UserResolver = {
       // check email if exist
       // if found return error else execute next line
       const checkUser = await getUserByEmail(args.email);
-      if (!checkUser)
+      if (checkUser)
         return ErrorResponse(
           "This email already registered",
           400,
@@ -57,15 +57,8 @@ const UserResolver = {
     async login(
       parent: User,
       args: { email: string; password: string },
-      { req, session }: MyContext
+      { req }: MyContext
     ) {
-      // check if client has cookie session
-      const userSession = await getUserById(session.sub);
-
-      // return user hash a session
-      if (userSession) {
-        return { status: "success", message: "successfull", user: userSession };
-      }
       // else check use from input "email"
       const user = await getUserByEmail(args.email);
       // return error if not an user
