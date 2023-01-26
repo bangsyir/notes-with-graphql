@@ -2,45 +2,114 @@ import { conn } from "../data-source";
 import { Note } from "../entity/Note";
 import { ErrorResponse } from "../handler/errorHandler";
 import { getNoteById } from "../handler/noteHandler";
+import { Auth } from "../helpers/auth";
 import { MyContext } from "../type";
+
+const noteRepository = conn.getRepository(Note);
 
 const NoteResolver = {
   Query: {
-    getNotes: async (parent: Note, args: any, { req, res }: MyContext) => {
-      console.log(req.cookies);
-      const notes = await conn.manager.find(Note);
+    getNotes: async (_: any, args: any, { session }: MyContext) => {
+      const auth = await Auth(session.sub);
+      const notes = await conn
+        .getRepository(Note)
+        .createQueryBuilder("notes")
+        .where("notes.user_id = :userId", { userId: auth.id })
+        .getMany();
+      if (!notes) return ErrorResponse("you dosnt have not yet", 400);
       return notes;
     },
-    getNote: async (parent: Note, args: { id: number }) => {
-      const note = await conn
+    getDeletedNotes: async (_: any, {}: any, { session }: MyContext) => {
+      const auth = await Auth(session.sub);
+      const notes = await conn
         .getRepository(Note)
-        .createQueryBuilder("note")
-        .where("note.id = :id", { id: args.id })
-        .getOne();
+        .createQueryBuilder("notes")
+        .withDeleted()
+        .where("notes.user_id = :userId & notes.deleted_at IS NOT NULL", {
+          userId: auth.id,
+        })
+        .getMany();
+      return notes;
+    },
+    getNote: async (
+      _: any,
+      { noteId }: { noteId: number },
+      { session }: MyContext
+    ) => {
+      const auth = await Auth(session.sub);
+
+      const note = await noteRepository.findOneBy({
+        id: noteId,
+        user: {
+          id: auth.id,
+        },
+      });
       return note;
     },
   },
   Mutation: {
-    async addNote(parent: Note, args: { title: string; description: string }) {
+    async addNote(
+      _: Note,
+      args: { title: string; description: string },
+      { session }: MyContext
+    ) {
+      const auth = await Auth(session.sub);
       const note = new Note();
       note.title = args.title;
       note.description = args.description;
+      note.user = auth;
       await conn.manager.save(note);
       return note;
     },
-    async editNote(
-      parent: Note,
-      args: { noteId: number; title: string; description: string }
+    async updateNote(
+      _: Note,
+      {
+        noteId,
+        title,
+        description,
+      }: { noteId: number; title: string; description: string },
+      { session }: MyContext
     ) {
       // finnd the note
-      const note = await getNoteById(args.noteId);
+      const auth = await Auth(session.sub);
+      const note = await noteRepository.findOneBy({
+        id: noteId,
+        user: {
+          id: auth.id,
+        },
+      });
       if (!note) return ErrorResponse("note not found", 404, "NOT_FOUND");
-      note.title = args.title;
-      note.description = args.description;
-      await conn.manager.save(note);
+      note.title = title;
+      note.description = description;
+      await noteRepository.save(note);
       return note;
     },
-    async deletedNote(parent: Note, args: { id: number }) {},
+    async deleteNote(parent: Note, args: { noteId: number }) {
+      const remove = await conn
+        .getRepository(Note)
+        .createQueryBuilder("notes")
+        .softDelete()
+        .where("id = :noteId", { noteId: args.noteId })
+        .execute();
+      console.log(remove);
+      if (remove.affected === 0) {
+        return ErrorResponse(`note with id ${args.noteId} not found`, 404);
+      }
+      return { status: "success", message: "note is deleted" };
+    },
+    async deleteNotePermanent(parent: Note, args: { noteId: number }) {
+      const remove = await conn
+        .getRepository(Note)
+        .createQueryBuilder("notes")
+        .delete()
+        .where("id = :noteId", { noteId: args.noteId })
+        .execute();
+      console.log(remove);
+      if (remove.affected === 0) {
+        return ErrorResponse(`note with id ${args.noteId} not found`, 404);
+      }
+      return { status: "success", message: "note is deleted" };
+    },
   },
 };
 
