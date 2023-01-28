@@ -1,16 +1,23 @@
 import { GraphQLError } from "graphql";
 
-export const ErrorResponse = (
-  message: string,
-  status: number,
-  code?: string
-) => {
+export const ErrorResponse = ({
+  message,
+  status,
+  code,
+  argumentName,
+}: {
+  message: string;
+  status?: Number;
+  code?: string;
+  argumentName?: string;
+}) => {
   throw new GraphQLError(message, {
     extensions: {
       http: {
-        code: code,
-        status: status,
+        status,
       },
+      code,
+      argumentName,
     },
   });
 };
