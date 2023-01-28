@@ -16,7 +16,11 @@ const NoteResolver = {
         .createQueryBuilder("notes")
         .where("notes.user_id = :userId", { userId: auth.id })
         .getMany();
-      if (!notes) return ErrorResponse("you dosnt have not yet", 400);
+      if (!notes)
+        return ErrorResponse({
+          message: "you dosnt have not yet",
+          status: 400,
+        });
       return notes;
     },
     getDeletedNotes: async (_: any, {}: any, { session }: MyContext) => {
@@ -78,7 +82,12 @@ const NoteResolver = {
           id: auth.id,
         },
       });
-      if (!note) return ErrorResponse("note not found", 404, "NOT_FOUND");
+      if (!note)
+        return ErrorResponse({
+          message: "note not found",
+          status: 404,
+          code: "NOT_FOUND",
+        });
       note.title = title;
       note.description = description;
       await noteRepository.save(note);
@@ -93,7 +102,10 @@ const NoteResolver = {
         .execute();
       console.log(remove);
       if (remove.affected === 0) {
-        return ErrorResponse(`note with id ${args.noteId} not found`, 404);
+        return ErrorResponse({
+          message: `note with id ${args.noteId} not found`,
+          status: 404,
+        });
       }
       return { status: "success", message: "note is deleted" };
     },
@@ -106,7 +118,10 @@ const NoteResolver = {
         .execute();
       console.log(remove);
       if (remove.affected === 0) {
-        return ErrorResponse(`note with id ${args.noteId} not found`, 404);
+        return ErrorResponse({
+          message: `note with id ${args.noteId} not found`,
+          status: 404,
+        });
       }
       return { status: "success", message: "note is deleted" };
     },
