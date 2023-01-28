@@ -1,6 +1,7 @@
 import formReducer from "@/reducer/formReducer";
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
+import Router from "next/router";
 
 const LOGIN_USER = gql`
   mutation Login($email: String, $password: String) {
@@ -13,18 +14,19 @@ const LOGIN_USER = gql`
   }
 `;
 export default function Login() {
-  const [login, { data, loading, error }] = useMutation(LOGIN_USER);
+  const [login, { data, loading, error }] = useMutation(LOGIN_USER, {
+    errorPolicy: "all",
+  });
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const loginHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    await login({
+    const signin = await login({
       variables: { email: formData.email, password: formData.password },
     });
-    console.log(data);
+    console.log(signin);
+    if (signin.errors == null) return Router.push("/");
   };
-
-  if (loading) return "Submitting...";
-  // if (error) return `Submission error! ${error.message}`;
+  // if (loading) return "Submitting...";
   return (
     <>
       <main className="container mx-auto px-4">
@@ -33,6 +35,11 @@ export default function Login() {
             <div className="w-full max-w-md space-y-8">
               <span className="font-bold text-xl">Login</span>
             </div>
+            {error && loading == false && (
+              <div className="bg-red-500 text-white border rounded-md px-2 py-1">
+                {error.message}
+              </div>
+            )}
             <form
               className="grid grid-cols-1 gap-4"
               method="POST"
