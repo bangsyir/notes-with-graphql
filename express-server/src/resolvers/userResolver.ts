@@ -19,7 +19,7 @@ const UserResolver = {
       // check user if available
       const user = await getUserById(userId);
       // if user not found return error
-      if (!user) ErrorResponse("User is not authenticated", 401);
+      if (!user) ErrorResponse({ message: "User is not authenticated" });
       // else return user
       return user;
     },
@@ -37,11 +37,11 @@ const UserResolver = {
       // if found return error else execute next line
       const checkUser = await getUserByEmail(args.email);
       if (checkUser)
-        return ErrorResponse(
-          "This email already registered",
-          400,
-          "BAD_REQUEST"
-        );
+        return ErrorResponse({
+          message: "This email already registered",
+          status: 400,
+          code: "BAD_REQUEST",
+        });
       // get password and generate to hash string
       const passwordHash = await hash(args.password, 10);
       // initialize user
@@ -63,12 +63,20 @@ const UserResolver = {
       const user = await getUserByEmail(args.email);
       // return error if not an user
       if (!user)
-        return ErrorResponse("email or password in wrong!", 400, "BAD_REQUEST");
+        return ErrorResponse({
+          message: "email or password in wrong!",
+          code: "BAD_USER_INPUT",
+          argumentName: "email",
+        });
       // compare password input with user.password hash
       const verifyHash = verifySync(args.password, user.password);
       // if false return error
       if (!verifyHash)
-        return ErrorResponse("email or password in wrong!", 400, "BAD_REQUEST");
+        return ErrorResponse({
+          message: "email or password in wrong!",
+          code: "BAD_USER_INPUT",
+          argumentName: "password",
+        });
       // create user session and send to  cookie headers
       req.session.sub = user.id;
       // return success user
