@@ -2,6 +2,7 @@ import formReducer from "@/reducer/formReducer";
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
 import Router from "next/router";
+import { GetServerSideProps } from "next";
 
 const LOGIN_USER = gql`
   mutation Login($email: String, $password: String) {
@@ -27,6 +28,8 @@ export default function Login() {
     if (signin.errors == null) return Router.push("/");
   };
   // if (loading) return "Submitting...";
+  if (data) {
+  }
   return (
     <>
       <main className="container mx-auto px-4">
@@ -80,3 +83,18 @@ export default function Login() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const cookie = ctx.req.headers.cookie;
+  if (cookie?.split("=")[1]) {
+    return {
+      props: {},
+      redirect: {
+        destination: "/",
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};
