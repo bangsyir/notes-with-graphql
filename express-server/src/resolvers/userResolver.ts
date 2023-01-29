@@ -2,7 +2,12 @@ import { conn } from "../data-source";
 import { User } from "../entity/User";
 import { getUserByEmail, getUserById } from "../handler/userHandler";
 import { MyContext } from "../type";
-import { ErrorResponse } from "../handler/errorHandler";
+import {
+  ErrorResponse,
+  validateEmail,
+  validateName,
+  validatePassword,
+} from "../handler/errorHandler";
 import { hash, verifySync } from "@node-rs/bcrypt";
 
 declare module "express-session" {
@@ -26,7 +31,7 @@ const UserResolver = {
   },
   Mutation: {
     async register(
-      parent: User,
+      _: User,
       args: {
         name: string;
         email: string;
@@ -35,11 +40,18 @@ const UserResolver = {
     ) {
       // check email if exist
       // if found return error else execute next line
+      const errors = {
+        name: validateName(args.name),
+        email: validateEmail(args.email),
+        password: validatePassword(args.password),
+      };
+      if (Object.keys(errors).some(Boolean)) {
+        return { status: "errors", message: "input errors", errors };
+      }
       const checkUser = await getUserByEmail(args.email);
       if (checkUser)
         return ErrorResponse({
           message: "This email already registered",
-          status: 400,
           code: "BAD_REQUEST",
         });
       // get password and generate to hash string
