@@ -13,12 +13,23 @@ const User = `#graphql
     message: String 
     user: User
   }
+  type RegisterError {
+    name:String
+    email: String 
+    password: String
+  }
+  type RegisterResponse {
+    status: String 
+    message: String 
+    user: User 
+    errors: RegisterError
+  }
   type Query {
     getUser(id: ID) : User
     getMe(userId: ID): User
   }
   type Mutation {
-    register(name: String, email: String, password:String): User
+    register(name: String, email: String, password:String): RegisterResponse
     login(email: String, password: String): UserResponse
   }
 `;
