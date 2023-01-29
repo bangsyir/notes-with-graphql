@@ -24,12 +24,8 @@ export default function Login() {
     const signin = await login({
       variables: { email: formData.email, password: formData.password },
     });
-    console.log(signin);
     if (signin.errors == null) return Router.push("/");
   };
-  // if (loading) return "Submitting...";
-  if (data) {
-  }
   return (
     <>
       <main className="container mx-auto px-4">
