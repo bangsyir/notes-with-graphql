@@ -12,6 +12,11 @@ const REGISTER_USER = gql`
         name
         email
       }
+      errors {
+        name
+        email
+        password
+      }
     }
   }
 `;
@@ -28,7 +33,8 @@ export default function Register() {
         password: formData.password,
       },
     });
-    if (signup.errors == null) return Router.push("/login");
+    console.log(signup);
+    // if (signup.errors == null) return Router.push("/login");
   };
   return (
     <>
@@ -38,7 +44,7 @@ export default function Register() {
             <div className="w-full max-w-md space-y-8">
               <span className="font-bold text-xl">Login</span>
             </div>
-            {JSON.stringify(error?.graphQLErrors)}
+            {JSON.stringify(error)}
             <form
               className="grid grid-cols-1 gap-4"
               method="POST"
