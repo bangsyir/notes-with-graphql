@@ -23,7 +23,7 @@ export const ErrorResponse = ({
 };
 
 export const validateName = (name: string) => {
-  if (name.length === 0) {
+  if (name.length < 1) {
     return "Name is require";
   }
   if (name.length < 5) {
@@ -31,11 +31,11 @@ export const validateName = (name: string) => {
   }
 };
 
-export const validateEmail = (Email: string) => {
-  if (Email.length === 0) {
+export const validateEmail = (email: string) => {
+  if (email.length === 0) {
     return "Email is required";
   }
-  if (Email.length < 5) {
+  if (email.length < 5) {
     return "Email at leats 5 characters long";
   }
 };
