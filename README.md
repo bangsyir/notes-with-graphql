@@ -4,7 +4,7 @@
 
 - express
 - graphql + apollo server
-- typeorm
+- typeorm + sqlite3
 - nextjs
 
 # how ro run ?
