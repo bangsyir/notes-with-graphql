@@ -7,6 +7,7 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import bodyParser from "body-parser";
 import Redis from "ioredis";
 import session from "express-session";
@@ -42,6 +43,7 @@ async function main() {
 
   // Same ApolloServer initialization as before, plus the drain plugin
   // for our httpServer
+
   const server = new ApolloServer({
     typeDefs: [Note, User],
     resolvers: [NoteResolver, UserResolver],
@@ -73,9 +75,9 @@ async function main() {
         disableTouch: false,
       }),
       cookie: {
-        secure: false, //set true for https
+        secure: true, //set true for https
         httpOnly: true,
-        sameSite: "lax", //set none  for https
+        sameSite: "none", //set none  for https
         maxAge: 1000 * 60 * 60 * 24,
       },
       secret: SESSION_SECRET,
