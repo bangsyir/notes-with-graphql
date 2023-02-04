@@ -48,3 +48,21 @@ export const validatePassword = (password: string) => {
     return "password at leats 5 characters long";
   }
 };
+
+export const validateTitle = (title: string) => {
+  if (title.length <= 0) {
+    return "title is required";
+  }
+  if (title.length < 8) {
+    return "title to short. at least 8 characters long";
+  }
+};
+
+export const validateDesc = (desc: string) => {
+  if (desc.length <= 0) {
+    return "description is required";
+  }
+  if (desc.length < 8) {
+    return "description to short. at least 8 characters long";
+  }
+};
