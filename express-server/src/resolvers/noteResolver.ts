@@ -1,7 +1,10 @@
 import { conn } from "../data-source";
 import { Note } from "../entity/Note";
-import { ErrorResponse } from "../handler/errorHandler";
-import { getNoteById } from "../handler/noteHandler";
+import {
+  ErrorResponse,
+  validateDesc,
+  validateTitle,
+} from "../handler/errorHandler";
 import { Auth } from "../helpers/auth";
 import { MyContext } from "../type";
 
@@ -54,16 +57,25 @@ const NoteResolver = {
   Mutation: {
     async addNote(
       _: Note,
-      args: { title: string; description: string },
+      args: { input: { title: string; description: string } },
       { session }: MyContext
     ) {
+      const errors = {
+        title: validateTitle(args.input.title) || undefined,
+        description: validateDesc(args.input.description) || undefined,
+      };
+
+      if (Object.values(errors).some(Boolean)) {
+        return { errors };
+      }
+
       const auth = await Auth(session.sub);
       const note = new Note();
-      note.title = args.title;
-      note.description = args.description;
+      note.title = args.input.title;
+      note.description = args.input.description;
       note.user = auth;
       await conn.manager.save(note);
-      return note;
+      return { note };
     },
     async updateNote(
       _: Note,
