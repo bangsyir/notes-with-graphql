@@ -18,8 +18,8 @@ const Note = `#graphql
     getDeletedNotes: [Note]
   }
   input NoteInput {
-    title: String! @constraint(minLength: 5)
-    description: String! @constraint(minLength: 5)
+    title: String!
+    description: String!
   }
   type Error {
     title: String 
