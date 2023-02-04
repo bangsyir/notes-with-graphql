@@ -17,8 +17,21 @@ const Note = `#graphql
     getNote(noteId: Int): Note
     getDeletedNotes: [Note]
   }
+  input NoteInput {
+    title: String! @constraint(minLength: 5)
+    description: String! @constraint(minLength: 5)
+  }
+  type Error {
+    title: String 
+    description: String
+  }
+
+  type AddNote {
+    note: Note
+    errors: Error
+  }
   type Mutation {
-    addNote(title: String, description:String): Note
+    addNote(input:NoteInput): AddNote
     updateNote(noteId: Int, title: String, description: String): Note
     deleteNote(noteId: Int): Response
     deleteNotePermanent(noteId: Int):Response
