@@ -2,7 +2,6 @@ lockfileVersion: 5.4
 
 specifiers:
   '@apollo/server': ^4.3.0
-  '@graphql-tools/schema': ^9.0.15
   '@node-rs/bcrypt': ^1.6.2
   '@types/body-parser': ^1.19.2
   '@types/connect-redis': ^0.0.19
@@ -28,7 +27,6 @@ specifiers:
 
 dependencies:
   '@apollo/server': 4.3.0_graphql@16.6.0
-  '@graphql-tools/schema': 9.0.15_graphql@16.6.0
   '@node-rs/bcrypt': 1.6.2
   body-parser: 1.20.1
   concurrently: 7.6.0
