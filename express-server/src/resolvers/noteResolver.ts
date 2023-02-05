@@ -12,8 +12,8 @@ const noteRepository = conn.getRepository(Note);
 
 const NoteResolver = {
   Query: {
-    getNotes: async (_: any, args: any, { session }: MyContext) => {
-      const auth = await Auth(session.sub);
+    getNotes: async (_: any, args: any, { res, session }: MyContext) => {
+      const auth = await Auth(session.sub, res);
       const notes = await conn
         .getRepository(Note)
         .createQueryBuilder("notes")
@@ -26,8 +26,8 @@ const NoteResolver = {
         });
       return notes;
     },
-    getDeletedNotes: async (_: any, {}: any, { session }: MyContext) => {
-      const auth = await Auth(session.sub);
+    getDeletedNotes: async (_: any, {}: any, { res, session }: MyContext) => {
+      const auth = await Auth(session.sub, res);
       const notes = await conn
         .getRepository(Note)
         .createQueryBuilder("notes")
@@ -41,9 +41,9 @@ const NoteResolver = {
     getNote: async (
       _: any,
       { noteId }: { noteId: number },
-      { session }: MyContext
+      { res, session }: MyContext
     ) => {
-      const auth = await Auth(session.sub);
+      const auth = await Auth(session.sub, res);
 
       const note = await noteRepository.findOneBy({
         id: noteId,
@@ -58,7 +58,7 @@ const NoteResolver = {
     async addNote(
       _: Note,
       args: { input: { title: string; description: string } },
-      { session }: MyContext
+      { res, session }: MyContext
     ) {
       const errors = {
         title: validateTitle(args.input.title) || undefined,
@@ -69,7 +69,7 @@ const NoteResolver = {
         return { errors };
       }
 
-      const auth = await Auth(session.sub);
+      const auth = await Auth(session.sub, res);
       const note = new Note();
       note.title = args.input.title;
       note.description = args.input.description;
@@ -84,10 +84,10 @@ const NoteResolver = {
         title,
         description,
       }: { noteId: number; title: string; description: string },
-      { session }: MyContext
+      { res, session }: MyContext
     ) {
       // finnd the note
-      const auth = await Auth(session.sub);
+      const auth = await Auth(session.sub, res);
       const note = await noteRepository.findOneBy({
         id: noteId,
         user: {
