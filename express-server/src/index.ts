@@ -75,9 +75,9 @@ async function main() {
         disableTouch: false,
       }),
       cookie: {
-        secure: true, //set true for https
+        secure: false, //set true for https
         httpOnly: true,
-        sameSite: "none", //set none  for https
+        sameSite: "lax", //set none  for https
         maxAge: 1000 * 60 * 60 * 24,
       },
       secret: SESSION_SECRET,
