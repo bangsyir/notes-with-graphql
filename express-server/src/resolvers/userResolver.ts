@@ -9,6 +9,7 @@ import {
   validatePassword,
 } from "../handler/errorHandler";
 import { hash, verifySync } from "@node-rs/bcrypt";
+import { Auth } from "../helpers/auth";
 
 declare module "express-session" {
   interface SessionData {
@@ -18,15 +19,11 @@ declare module "express-session" {
 
 const UserResolver = {
   Query: {
-    async getMe(parent: any, args: any, { session }: MyContext) {
+    async getMe(parent: any, args: any, { req, res, session }: MyContext) {
       // get userId from session
-      const userId = session.sub as number;
-      // check user if available
-      const user = await getUserById(userId);
-      // if user not found return error
-      if (!user) ErrorResponse({ message: "User is not authenticated" });
+      const auth = await Auth(session.sub, res);
       // else return user
-      return user;
+      return { user: auth };
     },
   },
   Mutation: {
@@ -45,7 +42,7 @@ const UserResolver = {
         email: validateEmail(args.email),
         password: validatePassword(args.password),
       };
-      if (Object.keys(errors).some(Boolean)) {
+      if (Object.values(errors).some(Boolean)) {
         return { status: "errors", message: "input errors", errors };
       }
       const checkUser = await getUserByEmail(args.email);
