@@ -1,30 +1,28 @@
 import formReducer from "@/reducer/formReducer";
 import React from "react";
-import { gql, useMutation } from "@apollo/client";
 import Router from "next/router";
 import { GetServerSideProps } from "next";
+import graphqlRequestClient from "@/request/graphqlRequestClient";
+import { useLoginMutation } from "@/generated/generated";
 
-const LOGIN_USER = gql`
-  mutation Login($email: String, $password: String) {
-    login(email: $email, password: $password) {
-      user {
-        name
-        email
-      }
-    }
-  }
-`;
 export default function Login() {
-  const [login, { data, loading, error }] = useMutation(LOGIN_USER, {
-    errorPolicy: "all",
+  const { isLoading, error, mutate } = useLoginMutation(graphqlRequestClient, {
+    onSuccess(data: any) {
+      console.log(data);
+      return Router.push("/");
+    },
+    onError(error: any) {
+      console.log(error);
+      return Router.push("/login");
+    },
   });
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const loginHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const signin = await login({
-      variables: { email: formData.email, password: formData.password },
-    });
-    if (signin.errors == null) return Router.push("/");
+    // const signin = await login({
+    //   variables: { email: formData.email, password: formData.password },
+    // });
+    mutate({ email: formData.email, password: formData.password });
   };
   return (
     <>
@@ -34,7 +32,7 @@ export default function Login() {
             <div className="w-full max-w-md space-y-8">
               <span className="font-bold text-xl">Login</span>
             </div>
-            {error && loading == false && (
+            {error && isLoading == false && (
               <div className="bg-red-500 text-white border rounded-md px-2 py-1">
                 {error.message}
               </div>
