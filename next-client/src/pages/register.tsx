@@ -1,39 +1,31 @@
+import { useRegisterMutation } from "@/generated/generated";
 import formReducer from "@/reducer/formReducer";
+import graphqlRequestClient from "@/request/graphqlRequestClient";
 import { gql, useMutation } from "@apollo/client";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import React from "react";
 
-const REGISTER_USER = gql`
-  mutation Register($name: String, $email: String, $password: String) {
-    register(name: $name, email: $email, password: $password) {
-      status
-      message
-      user {
-        name
-        email
-      }
-      errors {
-        name
-        email
-        password
-      }
-    }
-  }
-`;
-
 export default function Register() {
-  const [register, { data, loading, error }] = useMutation(REGISTER_USER);
+  const router = useRouter();
+  const { data, isLoading, mutate } = useRegisterMutation<Error>(
+    graphqlRequestClient,
+    {
+      onSuccess() {
+        router.push("/login");
+      },
+      onError(error: any) {
+        console.log(error);
+      },
+    }
+  );
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const registerHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const signup = await register({
-      variables: {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      },
+    mutate({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
     });
-    console.log(signup);
     // if (signup.errors == null) return Router.push("/login");
   };
   return (
@@ -44,7 +36,6 @@ export default function Register() {
             <div className="w-full max-w-md space-y-8">
               <span className="font-bold text-xl">Login</span>
             </div>
-            {JSON.stringify(error)}
             <form
               className="grid grid-cols-1 gap-4"
               method="POST"
