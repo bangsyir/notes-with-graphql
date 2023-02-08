@@ -6,7 +6,8 @@ import graphqlRequestClient from "@/request/graphqlRequestClient";
 
 export default function Home() {
   const router = useRouter();
-  const { isLoading, isError, data } = useGetNotesQuery(graphqlRequestClient);
+  const { isLoading, isError, error, data } =
+    useGetNotesQuery(graphqlRequestClient);
   return (
     <>
       <Head>
@@ -16,8 +17,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        {data?.getNotes?.length === 0 && <div>NO NOTES</div>}
         {data?.getNotes?.map((note) => (
-          <div key={note?.id}>{note?.title}</div>
+          <div key={note?.id}>
+            <div className="text-medium">{note?.title}</div>
+          </div>
         ))}
       </main>
     </>
@@ -25,15 +29,15 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  // if (ctx.req.headers.cookie === undefined) {
-  //   return {
-  //     props: {},
-  //     redirect: {
-  //       destination: "/login",
-  //       permanent: true,
-  //     },
-  //   };
-  // }
+  if (ctx.req.headers.cookie === undefined) {
+    return {
+      props: {},
+      redirect: {
+        destination: "/login",
+        permanent: true,
+      },
+    };
+  }
   return {
     props: {},
   };
