@@ -1,31 +1,12 @@
 import Head from "next/head";
-import { Inter } from "@next/font/google";
 import { GetServerSideProps } from "next";
-import { gql, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
-
-const inter = Inter({ subsets: ["latin"] });
-
-const GET_ME = gql`
-  query user {
-    getMe {
-      name
-      email
-      createdAt
-      updatedAt
-    }
-  }
-`;
+import { useGetNotesQuery } from "@/generated/generated";
+import graphqlRequestClient from "@/request/graphqlRequestClient";
 
 export default function Home() {
   const router = useRouter();
-  const { loading, error, data } = useQuery(GET_ME);
-  useEffect(() => {
-    if (error) {
-      router.push("/login");
-    }
-  }, [error, data]);
+  const { isLoading, isError, data } = useGetNotesQuery(graphqlRequestClient);
   return (
     <>
       <Head>
@@ -34,21 +15,25 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>NEXT-APP WITH GRAPHQL</main>
+      <main>
+        {data?.getNotes?.map((note) => (
+          <div key={note?.id}>{note?.title}</div>
+        ))}
+      </main>
     </>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  if (ctx.req.headers.cookie === undefined) {
-    return {
-      props: {},
-      redirect: {
-        destination: "/login",
-        permanent: true,
-      },
-    };
-  }
+  // if (ctx.req.headers.cookie === undefined) {
+  //   return {
+  //     props: {},
+  //     redirect: {
+  //       destination: "/login",
+  //       permanent: true,
+  //     },
+  //   };
+  // }
   return {
     props: {},
   };
