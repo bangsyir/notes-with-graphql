@@ -6,6 +6,7 @@ import {
   createHttpLink,
   InMemoryCache,
 } from "@apollo/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const link = createHttpLink({
   uri: "http://localhost:4000/graphql",
@@ -18,10 +19,12 @@ const client = new ApolloClient({
   ssrMode: true,
 });
 
+const queryClient = new QueryClient();
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ApolloProvider client={client}>
+    <QueryClientProvider client={queryClient}>
       <Component {...pageProps} />
-    </ApolloProvider>
+    </QueryClientProvider>
   );
 }
