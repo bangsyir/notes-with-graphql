@@ -22,8 +22,19 @@ const UserResolver = {
     async getMe(parent: any, args: any, { req, res, session }: MyContext) {
       // get userId from session
       const auth = await Auth(session.sub, res);
+      const user = auth;
       // else return user
-      return { user: auth };
+      return user;
+    },
+    async logout(_: any, args: any, { req, res }: MyContext) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.log(err);
+          return false;
+        }
+      });
+      res.clearCookie("gassess");
+      return true;
     },
   },
   Mutation: {
