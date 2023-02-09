@@ -24,9 +24,11 @@ const User = `#graphql
     user: User 
     errors: RegisterError
   }
+
   type Query {
     getUser(id: ID) : User
     getMe(userId: ID): User
+    logout:Boolean
   }
   type Mutation {
     register(name: String, email: String, password:String): RegisterResponse
