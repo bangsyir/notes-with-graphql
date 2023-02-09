@@ -4,17 +4,19 @@ import Router from "next/router";
 import { GetServerSideProps } from "next";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
 import { useLoginMutation } from "@/generated/generated";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Login() {
+  const queryClient = useQueryClient();
   const { isLoading, error, mutate } = useLoginMutation(graphqlRequestClient, {
     onSuccess(data: any) {
-      console.log(data);
       return Router.push("/");
     },
     onError(error: any) {
-      console.log(error);
+      queryClient.clear();
       return Router.push("/login");
     },
+    retry: false,
   });
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const loginHandler = async (e: React.SyntheticEvent) => {
@@ -34,7 +36,7 @@ export default function Login() {
             </div>
             {error && isLoading == false && (
               <div className="bg-red-500 text-white border rounded-md px-2 py-1">
-                {error.message}
+                {error.response.errors[0].message}
               </div>
             )}
             <form
@@ -45,7 +47,7 @@ export default function Login() {
               <div className="flex flex-col flex-wrap">
                 <label>Email</label>
                 <input
-                  className="w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                  className="w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-cyan-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   type="text"
                   name="email"
                   id="email"
@@ -55,8 +57,8 @@ export default function Login() {
               <div className="flex flex-col flex-wrap">
                 <label>Password</label>
                 <input
-                  className="w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  type="text"
+                  className="w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-cyan-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                  type="password"
                   name="password"
                   id="password"
                   onChange={setFormData}
@@ -65,7 +67,7 @@ export default function Login() {
               <div>
                 <button
                   type="submit"
-                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-cyan-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                   Login
                 </button>
