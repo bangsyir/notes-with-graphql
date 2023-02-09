@@ -1,13 +1,16 @@
 import Head from "next/head";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useGetNotesQuery } from "@/generated/generated";
+import { useGetNotesQuery, useUserQuery } from "@/generated/generated";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
+import Navbar from "@/components/Navbar";
+import AddNote from "@/components/AddNote";
 
 export default function Home() {
   const router = useRouter();
   const { isLoading, isError, error, data } =
     useGetNotesQuery(graphqlRequestClient);
+
   return (
     <>
       <Head>
@@ -16,13 +19,33 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        {data?.getNotes?.length === 0 && <div>NO NOTES</div>}
-        {data?.getNotes?.map((note) => (
-          <div key={note?.id}>
-            <div className="text-medium">{note?.title}</div>
-          </div>
-        ))}
+      <main className="container mx-auto px-4 pt-10">
+        <Navbar />
+        <AddNote />
+        {data?.getNotes?.length === 0 && (
+          <div className="text-center">NO NOTES</div>
+        )}
+        <div className="flex flex-col gap-4 pt-4 mx-4">
+          {data?.getNotes?.map((note) => (
+            <div
+              key={note?.id}
+              className="flex justify-between items-start border rounded-md p-2"
+            >
+              <div>
+                <div className="text-medium font-bold">{note?.title}</div>
+                <div>{note?.description}</div>
+              </div>
+              <div className="flex gap-2">
+                <button className="border rounded-md px-2 bg-green-500 text-white">
+                  edit
+                </button>
+                <button className="border rounded-md px-2 bg-red-500 text-white">
+                  delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </main>
     </>
   );
