@@ -102,6 +102,7 @@ export type Query = {
   getNote?: Maybe<Note>;
   getNotes?: Maybe<Array<Maybe<Note>>>;
   getUser?: Maybe<User>;
+  logout?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -163,6 +164,16 @@ export type GetNotesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetNotesQuery = { __typename?: 'Query', getNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null } | null> | null };
 
+export type UserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserQuery = { __typename?: 'Query', getMe?: { __typename?: 'User', name?: string | null, email?: string | null, createdAt?: string | null, updatedAt?: string | null } | null };
+
+export type LogoutQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutQuery = { __typename?: 'Query', logout?: boolean | null };
+
 export type LoginMutationVariables = Exact<{
   email?: InputMaybe<Scalars['String']>;
   password?: InputMaybe<Scalars['String']>;
@@ -202,6 +213,49 @@ export const useGetNotesQuery = <
     useQuery<GetNotesQuery, TError, TData>(
       variables === undefined ? ['GetNotes'] : ['GetNotes', variables],
       fetcher<GetNotesQuery, GetNotesQueryVariables>(client, GetNotesDocument, variables, headers),
+      options
+    );
+export const UserDocument = `
+    query user {
+  getMe {
+    name
+    email
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export const useUserQuery = <
+      TData = UserQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: UserQueryVariables,
+      options?: UseQueryOptions<UserQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<UserQuery, TError, TData>(
+      variables === undefined ? ['user'] : ['user', variables],
+      fetcher<UserQuery, UserQueryVariables>(client, UserDocument, variables, headers),
+      options
+    );
+export const LogoutDocument = `
+    query Logout {
+  logout
+}
+    `;
+export const useLogoutQuery = <
+      TData = LogoutQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: LogoutQueryVariables,
+      options?: UseQueryOptions<LogoutQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<LogoutQuery, TError, TData>(
+      variables === undefined ? ['Logout'] : ['Logout', variables],
+      fetcher<LogoutQuery, LogoutQueryVariables>(client, LogoutDocument, variables, headers),
       options
     );
 export const LoginDocument = `
