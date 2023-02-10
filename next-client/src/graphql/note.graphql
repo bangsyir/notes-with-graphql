@@ -5,3 +5,16 @@ query GetNotes {
     description
   }
 }
+
+mutation AddNote($input: NoteInput) {
+  addNote(input: $input) {
+    errors {
+      title
+      description
+    }
+    note {
+      title
+      description
+    }
+  }
+}
