@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { GetServerSideProps } from "next";
-import { useGetNotesQuery } from "@/generated/generated";
+import { Note, GetNotesQuery, useGetNotesQuery } from "@/generated/generated";
 import graphqlRequestClient, {
   graphqlRequest,
 } from "@/request/graphqlRequestClient";
@@ -9,14 +9,19 @@ import AddNote from "@/components/AddNote";
 import { dehydrate, QueryClient, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import React from "react";
 
 export default function Home(props: any) {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const [notes, setNotes] = React.useState<any>([]);
   const { data, isLoading } = useGetNotesQuery(
     graphqlRequestClient,
     {},
     {
+      onSuccess(data: GetNotesQuery) {
+        setNotes(data.getNotes);
+      },
       onError(error: any) {
         if (error.response.status === 401) {
           queryClient.clear();
@@ -42,11 +47,9 @@ export default function Home(props: any) {
         <Navbar />
         <Link href={"/edit"}>edit</Link>
         <AddNote />
-        {data?.getNotes?.length === 0 && (
-          <div className="text-center">NO NOTES</div>
-        )}
+        {notes?.length === 0 && <div className="text-center">NO NOTES</div>}
         <div className="flex flex-col gap-4 pt-4 mx-4">
-          {data?.getNotes?.map((note) => (
+          {notes?.map((note: Note) => (
             <div
               key={note?.id}
               className="flex justify-between items-start border rounded-md p-2"
