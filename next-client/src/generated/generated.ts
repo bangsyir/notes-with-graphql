@@ -164,6 +164,13 @@ export type GetNotesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetNotesQuery = { __typename?: 'Query', getNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null } | null> | null };
 
+export type AddNoteMutationVariables = Exact<{
+  input?: InputMaybe<NoteInput>;
+}>;
+
+
+export type AddNoteMutation = { __typename?: 'Mutation', addNote?: { __typename?: 'AddNote', errors?: { __typename?: 'Error', title?: string | null, description?: string | null } | null, note?: { __typename?: 'Note', title?: string | null, description?: string | null } | null } | null };
+
 export type UserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -222,6 +229,34 @@ useGetNotesQuery.getKey = (variables?: GetNotesQueryVariables) => variables === 
 ;
 
 useGetNotesQuery.fetcher = (client: GraphQLClient, variables?: GetNotesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetNotesQuery, GetNotesQueryVariables>(client, GetNotesDocument, variables, headers);
+export const AddNoteDocument = `
+    mutation AddNote($input: NoteInput) {
+  addNote(input: $input) {
+    errors {
+      title
+      description
+    }
+    note {
+      title
+      description
+    }
+  }
+}
+    `;
+export const useAddNoteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddNoteMutation, TError, AddNoteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AddNoteMutation, TError, AddNoteMutationVariables, TContext>(
+      ['AddNote'],
+      (variables?: AddNoteMutationVariables) => fetcher<AddNoteMutation, AddNoteMutationVariables>(client, AddNoteDocument, variables, headers)(),
+      options
+    );
+useAddNoteMutation.fetcher = (client: GraphQLClient, variables?: AddNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<AddNoteMutation, AddNoteMutationVariables>(client, AddNoteDocument, variables, headers);
 export const UserDocument = `
     query user {
   getMe {
