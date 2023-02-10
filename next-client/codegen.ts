@@ -12,7 +12,11 @@ const config: CodegenConfig = {
         "typescript-react-query",
       ],
       config: {
+        exposeDocument: true,
+        exposeQueryKeys: true,
+        exposeFetcher: true,
         fetcher: "graphql-request",
+        withHook: true,
       },
     },
   },
