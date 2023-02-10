@@ -1,15 +1,34 @@
 import Head from "next/head";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import { useGetNotesQuery, useUserQuery } from "@/generated/generated";
-import graphqlRequestClient from "@/request/graphqlRequestClient";
+import { useGetNotesQuery } from "@/generated/generated";
+import graphqlRequestClient, {
+  graphqlRequest,
+} from "@/request/graphqlRequestClient";
 import Navbar from "@/components/Navbar";
 import AddNote from "@/components/AddNote";
+import { dehydrate, QueryClient, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-export default function Home() {
+export default function Home(props: any) {
+  const queryClient = useQueryClient();
   const router = useRouter();
-  const { isLoading, isError, error, data } =
-    useGetNotesQuery(graphqlRequestClient);
+  const { data, isLoading } = useGetNotesQuery(
+    graphqlRequestClient,
+    {},
+    {
+      onError(error: any) {
+        if (error.response.status === 401) {
+          queryClient.clear();
+          router.push("/login");
+        }
+      },
+    }
+  );
+
+  if (isLoading) {
+    return <div>loading...</div>;
+  }
 
   return (
     <>
@@ -21,6 +40,7 @@ export default function Home() {
       </Head>
       <main className="container mx-auto px-4 pt-10">
         <Navbar />
+        <Link href={"/edit"}>edit</Link>
         <AddNote />
         {data?.getNotes?.length === 0 && (
           <div className="text-center">NO NOTES</div>
@@ -52,16 +72,24 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const cookie = ctx.req.headers.cookie as string;
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery(
+    useGetNotesQuery.getKey(),
+    useGetNotesQuery.fetcher(graphqlRequest(cookie))
+  );
   if (ctx.req.headers.cookie === undefined) {
     return {
       props: {},
       redirect: {
         destination: "/login",
-        permanent: true,
+        permanent: false,
       },
     };
   }
   return {
-    props: {},
+    props: {
+      dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
+    },
   };
 };
