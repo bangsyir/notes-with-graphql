@@ -215,6 +215,13 @@ export const useGetNotesQuery = <
       fetcher<GetNotesQuery, GetNotesQueryVariables>(client, GetNotesDocument, variables, headers),
       options
     );
+useGetNotesQuery.document = GetNotesDocument;
+
+
+useGetNotesQuery.getKey = (variables?: GetNotesQueryVariables) => variables === undefined ? ['GetNotes'] : ['GetNotes', variables];
+;
+
+useGetNotesQuery.fetcher = (client: GraphQLClient, variables?: GetNotesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetNotesQuery, GetNotesQueryVariables>(client, GetNotesDocument, variables, headers);
 export const UserDocument = `
     query user {
   getMe {
@@ -239,6 +246,13 @@ export const useUserQuery = <
       fetcher<UserQuery, UserQueryVariables>(client, UserDocument, variables, headers),
       options
     );
+useUserQuery.document = UserDocument;
+
+
+useUserQuery.getKey = (variables?: UserQueryVariables) => variables === undefined ? ['user'] : ['user', variables];
+;
+
+useUserQuery.fetcher = (client: GraphQLClient, variables?: UserQueryVariables, headers?: RequestInit['headers']) => fetcher<UserQuery, UserQueryVariables>(client, UserDocument, variables, headers);
 export const LogoutDocument = `
     query Logout {
   logout
@@ -258,6 +272,13 @@ export const useLogoutQuery = <
       fetcher<LogoutQuery, LogoutQueryVariables>(client, LogoutDocument, variables, headers),
       options
     );
+useLogoutQuery.document = LogoutDocument;
+
+
+useLogoutQuery.getKey = (variables?: LogoutQueryVariables) => variables === undefined ? ['Logout'] : ['Logout', variables];
+;
+
+useLogoutQuery.fetcher = (client: GraphQLClient, variables?: LogoutQueryVariables, headers?: RequestInit['headers']) => fetcher<LogoutQuery, LogoutQueryVariables>(client, LogoutDocument, variables, headers);
 export const LoginDocument = `
     mutation Login($email: String, $password: String) {
   login(email: $email, password: $password) {
@@ -281,6 +302,7 @@ export const useLoginMutation = <
       (variables?: LoginMutationVariables) => fetcher<LoginMutation, LoginMutationVariables>(client, LoginDocument, variables, headers)(),
       options
     );
+useLoginMutation.fetcher = (client: GraphQLClient, variables?: LoginMutationVariables, headers?: RequestInit['headers']) => fetcher<LoginMutation, LoginMutationVariables>(client, LoginDocument, variables, headers);
 export const RegisterDocument = `
     mutation Register($name: String, $email: String, $password: String) {
   register(name: $name, email: $email, password: $password) {
@@ -311,3 +333,4 @@ export const useRegisterMutation = <
       (variables?: RegisterMutationVariables) => fetcher<RegisterMutation, RegisterMutationVariables>(client, RegisterDocument, variables, headers)(),
       options
     );
+useRegisterMutation.fetcher = (client: GraphQLClient, variables?: RegisterMutationVariables, headers?: RequestInit['headers']) => fetcher<RegisterMutation, RegisterMutationVariables>(client, RegisterDocument, variables, headers);
