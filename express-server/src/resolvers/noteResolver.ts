@@ -18,6 +18,7 @@ const NoteResolver = {
         .getRepository(Note)
         .createQueryBuilder("notes")
         .where("notes.user_id = :userId", { userId: auth.id })
+        .orderBy("notes.created_at", "DESC")
         .getMany();
       if (!notes)
         return ErrorResponse({
