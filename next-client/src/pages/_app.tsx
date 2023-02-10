@@ -6,7 +6,13 @@ import {
   createHttpLink,
   InMemoryCache,
 } from "@apollo/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  DehydratedState,
+  Hydrate,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import React from "react";
 
 const link = createHttpLink({
   uri: "http://localhost:4000/graphql",
@@ -19,12 +25,18 @@ const client = new ApolloClient({
   ssrMode: true,
 });
 
-const queryClient = new QueryClient();
+// const queryClient = new QueryClient();
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps,
+}: AppProps<{ dehydrateState: DehydratedState }>) {
+  const [queryClient] = React.useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      <Hydrate state={pageProps.dehydrateState}>
+        <Component {...pageProps} />
+      </Hydrate>
     </QueryClientProvider>
   );
 }
