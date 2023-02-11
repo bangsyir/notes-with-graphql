@@ -18,3 +18,10 @@ mutation AddNote($input: NoteInput) {
     }
   }
 }
+
+mutation DeleteNote($noteId: Int) {
+  deleteNote(noteId: $noteId) {
+    message
+    status
+  }
+}
