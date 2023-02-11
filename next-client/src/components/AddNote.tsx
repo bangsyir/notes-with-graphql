@@ -2,19 +2,20 @@ import {
   AddNoteMutation,
   useAddNoteMutation,
   Error,
+  useGetNotesQuery,
 } from "@/generated/generated";
 import formReducer from "@/reducer/formReducer";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
-export default function AddNote({ setNotes }: { setNotes?: () => void }) {
+export default function AddNote() {
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const [errors, setErrors] = React.useState<Error>();
+  const queryClient = useQueryClient();
   const { isLoading, mutate } = useAddNoteMutation(graphqlRequestClient, {
     onSuccess(data: AddNoteMutation) {
-      if (data?.addNote?.errors !== null) {
-        setErrors(data.addNote?.errors);
-      }
+      queryClient.refetchQueries(useGetNotesQuery.getKey());
     },
     onError(error: any) {
       console.log({ error });
