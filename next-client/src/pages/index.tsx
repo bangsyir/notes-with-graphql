@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { GetServerSideProps } from "next";
-import { Note, GetNotesQuery, useGetNotesQuery } from "@/generated/generated";
+import { useGetNotesQuery, useDeleteNoteMutation } from "@/generated/generated";
 import graphqlRequestClient, {
   graphqlRequest,
 } from "@/request/graphqlRequestClient";
@@ -27,6 +27,11 @@ export default function Home(props: any) {
     }
   );
 
+  const deleteNote = useDeleteNoteMutation(graphqlRequestClient, {
+    onSuccess(data: any) {
+      queryClient.refetchQueries(useGetNotesQuery.getKey());
+    },
+  });
   if (isLoading) {
     return <div>loading...</div>;
   }
@@ -57,10 +62,20 @@ export default function Home(props: any) {
                 <div>{note?.description}</div>
               </div>
               <div className="flex gap-2">
-                <button className="border rounded-md px-2 bg-green-500 text-white">
+                <button
+                  type="submit"
+                  className="border rounded-md px-2 bg-green-500 text-white"
+                >
                   edit
                 </button>
-                <button className="border rounded-md px-2 bg-red-500 text-white">
+                <button
+                  type="submit"
+                  className="border rounded-md px-2 bg-red-500 text-white"
+                  onClick={() => {
+                    console.log("hai");
+                    return deleteNote.mutate({ noteId: Number(note?.id) });
+                  }}
+                >
                   delete
                 </button>
               </div>
