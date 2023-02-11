@@ -14,14 +14,10 @@ import React from "react";
 export default function Home(props: any) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const [notes, setNotes] = React.useState<any>([]);
   const { data, isLoading } = useGetNotesQuery(
     graphqlRequestClient,
     {},
     {
-      onSuccess(data: GetNotesQuery) {
-        setNotes(data.getNotes);
-      },
       onError(error: any) {
         if (error.response.status === 401) {
           queryClient.clear();
@@ -47,9 +43,11 @@ export default function Home(props: any) {
         <Navbar />
         <Link href={"/edit"}>edit</Link>
         <AddNote />
-        {notes?.length === 0 && <div className="text-center">NO NOTES</div>}
+        {data?.getNotes?.length === 0 && (
+          <div className="text-center">NO NOTES</div>
+        )}
         <div className="flex flex-col gap-4 pt-4 mx-4">
-          {notes?.map((note: Note) => (
+          {data?.getNotes?.map((note) => (
             <div
               key={note?.id}
               className="flex justify-between items-start border rounded-md p-2"
