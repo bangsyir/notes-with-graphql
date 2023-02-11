@@ -171,6 +171,13 @@ export type AddNoteMutationVariables = Exact<{
 
 export type AddNoteMutation = { __typename?: 'Mutation', addNote?: { __typename?: 'AddNote', errors?: { __typename?: 'Error', title?: string | null, description?: string | null } | null, note?: { __typename?: 'Note', title?: string | null, description?: string | null } | null } | null };
 
+export type DeleteNoteMutationVariables = Exact<{
+  noteId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type DeleteNoteMutation = { __typename?: 'Mutation', deleteNote?: { __typename?: 'Response', message?: string | null, status?: string | null } | null };
+
 export type UserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -257,6 +264,28 @@ export const useAddNoteMutation = <
       options
     );
 useAddNoteMutation.fetcher = (client: GraphQLClient, variables?: AddNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<AddNoteMutation, AddNoteMutationVariables>(client, AddNoteDocument, variables, headers);
+export const DeleteNoteDocument = `
+    mutation DeleteNote($noteId: Int) {
+  deleteNote(noteId: $noteId) {
+    message
+    status
+  }
+}
+    `;
+export const useDeleteNoteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<DeleteNoteMutation, TError, DeleteNoteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<DeleteNoteMutation, TError, DeleteNoteMutationVariables, TContext>(
+      ['DeleteNote'],
+      (variables?: DeleteNoteMutationVariables) => fetcher<DeleteNoteMutation, DeleteNoteMutationVariables>(client, DeleteNoteDocument, variables, headers)(),
+      options
+    );
+useDeleteNoteMutation.fetcher = (client: GraphQLClient, variables?: DeleteNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<DeleteNoteMutation, DeleteNoteMutationVariables>(client, DeleteNoteDocument, variables, headers);
 export const UserDocument = `
     query user {
   getMe {
