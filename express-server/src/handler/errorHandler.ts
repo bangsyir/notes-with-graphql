@@ -50,7 +50,7 @@ export const validatePassword = (password: string) => {
 };
 
 export const validateTitle = (title: string) => {
-  if (title.length <= 0) {
+  if (title.length === 0) {
     return "title is required";
   }
   if (title.length < 8) {
@@ -59,7 +59,7 @@ export const validateTitle = (title: string) => {
 };
 
 export const validateDesc = (desc: string) => {
-  if (desc.length <= 0) {
+  if (desc.length === 0) {
     return "description is required";
   }
   if (desc.length < 8) {
