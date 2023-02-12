@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import { conn } from "../data-source";
 import { Note } from "../entity/Note";
 import {
@@ -67,7 +68,13 @@ const NoteResolver = {
       };
 
       if (Object.values(errors).some(Boolean)) {
-        return { errors };
+        throw new GraphQLError("input error", {
+          extensions: {
+            http: { status: 400 },
+            code: "BAD_REQUEST",
+            data: errors,
+          },
+        });
       }
 
       const auth = await Auth(session.sub, res);
