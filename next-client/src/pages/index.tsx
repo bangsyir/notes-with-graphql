@@ -1,6 +1,10 @@
 import Head from "next/head";
 import { GetServerSideProps } from "next";
-import { useGetNotesQuery, useDeleteNoteMutation } from "@/generated/generated";
+import {
+  useGetNotesQuery,
+  useDeleteNoteMutation,
+  Note,
+} from "@/generated/generated";
 import graphqlRequestClient, {
   graphqlRequest,
 } from "@/request/graphqlRequestClient";
@@ -10,8 +14,17 @@ import { dehydrate, QueryClient, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
+import { toast } from "react-toastify";
+import EditNote from "@/components/EditNote";
 
-export default function Home(props: any) {
+export default function Home() {
+  const [addNotemodal, setAddNoteModal] = React.useState(false);
+  const [editNoteModal, setEditNoteModal] = React.useState(false);
+  const [editData, setEditData] = React.useState<{
+    id?: string;
+    title?: string;
+    description?: string;
+  }>();
   const queryClient = useQueryClient();
   const router = useRouter();
   const { data, isLoading } = useGetNotesQuery(
@@ -29,6 +42,10 @@ export default function Home(props: any) {
 
   const deleteNote = useDeleteNoteMutation(graphqlRequestClient, {
     onSuccess(data: any) {
+      toast("success delete!", {
+        type: "success",
+        position: "top-right",
+      });
       queryClient.refetchQueries(useGetNotesQuery.getKey());
     },
   });
@@ -36,6 +53,11 @@ export default function Home(props: any) {
     return <div>loading...</div>;
   }
 
+  function openEditHandler(e: React.SyntheticEvent, data: any) {
+    e.preventDefault();
+    setEditNoteModal(!editNoteModal);
+    setEditData(data);
+  }
   return (
     <>
       <Head>
@@ -44,10 +66,12 @@ export default function Home(props: any) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="container mx-auto px-4 pt-10">
-        <Navbar />
-        <Link href={"/edit"}>edit</Link>
-        <AddNote />
+      <main className="container mx-auto px-4 pt-10 relative">
+        <Navbar setAddNoteModal={setAddNoteModal} />
+        <AddNote
+          addNoteModal={addNotemodal}
+          setAddNoteModal={setAddNoteModal}
+        />
         {data?.getNotes?.length === 0 && (
           <div className="text-center">NO NOTES</div>
         )}
@@ -65,16 +89,19 @@ export default function Home(props: any) {
                 <button
                   type="submit"
                   className="border rounded-md px-2 bg-green-500 text-white"
+                  onClick={(e) => {
+                    const data = note;
+                    openEditHandler(e, data);
+                  }}
                 >
                   edit
                 </button>
                 <button
                   type="submit"
                   className="border rounded-md px-2 bg-red-500 text-white"
-                  onClick={() => {
-                    console.log("hai");
-                    return deleteNote.mutate({ noteId: Number(note?.id) });
-                  }}
+                  onClick={() =>
+                    deleteNote.mutate({ noteId: Number(note?.id) })
+                  }
                 >
                   delete
                 </button>
@@ -82,6 +109,11 @@ export default function Home(props: any) {
             </div>
           ))}
         </div>
+        <EditNote
+          show={editNoteModal}
+          setShow={setEditNoteModal}
+          data={editData}
+        />
       </main>
     </>
   );
