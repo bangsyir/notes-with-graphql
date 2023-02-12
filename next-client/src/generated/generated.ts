@@ -162,7 +162,7 @@ export type UserResponse = {
 export type GetNotesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNotesQuery = { __typename?: 'Query', getNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null } | null> | null };
+export type GetNotesQuery = { __typename?: 'Query', getNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null } | null> | null };
 
 export type AddNoteMutationVariables = Exact<{
   input?: InputMaybe<NoteInput>;
@@ -170,6 +170,15 @@ export type AddNoteMutationVariables = Exact<{
 
 
 export type AddNoteMutation = { __typename?: 'Mutation', addNote?: { __typename?: 'AddNote', errors?: { __typename?: 'Error', title?: string | null, description?: string | null } | null, note?: { __typename?: 'Note', title?: string | null, description?: string | null } | null } | null };
+
+export type UpdateNoteMutationVariables = Exact<{
+  noteId?: InputMaybe<Scalars['Int']>;
+  title?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type UpdateNoteMutation = { __typename?: 'Mutation', updateNote?: { __typename?: 'Note', id: string, title?: string | null, description?: string | null } | null };
 
 export type DeleteNoteMutationVariables = Exact<{
   noteId?: InputMaybe<Scalars['Int']>;
@@ -212,6 +221,7 @@ export const GetNotesDocument = `
     id
     title
     description
+    createdAt
   }
 }
     `;
@@ -264,6 +274,29 @@ export const useAddNoteMutation = <
       options
     );
 useAddNoteMutation.fetcher = (client: GraphQLClient, variables?: AddNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<AddNoteMutation, AddNoteMutationVariables>(client, AddNoteDocument, variables, headers);
+export const UpdateNoteDocument = `
+    mutation UpdateNote($noteId: Int, $title: String, $description: String) {
+  updateNote(noteId: $noteId, title: $title, description: $description) {
+    id
+    title
+    description
+  }
+}
+    `;
+export const useUpdateNoteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateNoteMutation, TError, UpdateNoteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateNoteMutation, TError, UpdateNoteMutationVariables, TContext>(
+      ['UpdateNote'],
+      (variables?: UpdateNoteMutationVariables) => fetcher<UpdateNoteMutation, UpdateNoteMutationVariables>(client, UpdateNoteDocument, variables, headers)(),
+      options
+    );
+useUpdateNoteMutation.fetcher = (client: GraphQLClient, variables?: UpdateNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateNoteMutation, UpdateNoteMutationVariables>(client, UpdateNoteDocument, variables, headers);
 export const DeleteNoteDocument = `
     mutation DeleteNote($noteId: Int) {
   deleteNote(noteId: $noteId) {
