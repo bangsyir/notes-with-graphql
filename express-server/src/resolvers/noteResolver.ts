@@ -96,6 +96,22 @@ const NoteResolver = {
     ) {
       // finnd the note
       const auth = await Auth(session.sub, res);
+
+      const errors = {
+        title: validateTitle(title) || undefined,
+        description: validateDesc(description) || undefined,
+      };
+
+      if (Object.values(errors).some(Boolean)) {
+        throw new GraphQLError("input error", {
+          extensions: {
+            http: { status: 400 },
+            code: "BAD_REQUEST",
+            data: errors,
+          },
+        });
+      }
+
       const note = await noteRepository.findOneBy({
         id: noteId,
         user: {
