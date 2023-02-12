@@ -3,6 +3,7 @@ query GetNotes {
     id
     title
     description
+    createdAt
   }
 }
 
@@ -16,6 +17,14 @@ mutation AddNote($input: NoteInput) {
       title
       description
     }
+  }
+}
+
+mutation UpdateNote($noteId: Int, $title: String, $description: String) {
+  updateNote(noteId: $noteId, title: $title, description: $description) {
+    id
+    title
+    description
   }
 }
 
