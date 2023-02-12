@@ -7,31 +7,55 @@ import {
 import formReducer from "@/reducer/formReducer";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
 import { useQueryClient } from "@tanstack/react-query";
-import React from "react";
+import React, { FormEvent, useRef } from "react";
+import { toast } from "react-toastify";
 
-export default function AddNote() {
+export default function AddNote({
+  addNoteModal,
+  setAddNoteModal,
+}: {
+  addNoteModal: boolean;
+  setAddNoteModal: (value: boolean) => void;
+}) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const [errors, setErrors] = React.useState<Error>();
   const queryClient = useQueryClient();
   const { isLoading, mutate } = useAddNoteMutation(graphqlRequestClient, {
     onSuccess(data: AddNoteMutation) {
+      console.log(data);
+      toast("note is success to create!", {
+        type: "success",
+        position: "top-right",
+      });
       queryClient.refetchQueries(useGetNotesQuery.getKey());
+      setAddNoteModal(false);
+      formRef.current?.reset();
     },
     onError(error: any) {
       console.log({ error });
     },
   });
 
-  async function createNoteHandler(e: React.SyntheticEvent) {
+  function createNoteHandler(e: FormEvent) {
     e.preventDefault();
     mutate({
       input: { title: formData.title, description: formData.description },
     });
   }
   return (
-    <div className="m-4 border rounded-md">
-      <div className="p-2">
-        <form action="post" onSubmit={createNoteHandler}>
+    <div
+      className={`flex items-center justify-center ${
+        addNoteModal === true ? "visible" : "invisible"
+      }`}
+    >
+      <div className="fixed inset-0 top-0 bg-gray-600 bg-opacity-50"></div>
+      <div className="border rounded-md w-1/2 p-4 absolute top-1/4 bg-white shadow-lg">
+        <div className="flex justify-between items-center pb-2">
+          <span className="font-bold">Add note</span>
+          <button onClick={() => setAddNoteModal(false)}>x</button>
+        </div>
+        <form action="post" onSubmit={createNoteHandler} ref={formRef}>
           <div className="grid gap-4">
             <input
               type="text"
