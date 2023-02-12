@@ -23,24 +23,28 @@ export default function AddNote({
   const queryClient = useQueryClient();
   const { isLoading, mutate } = useAddNoteMutation(graphqlRequestClient, {
     onSuccess(data: AddNoteMutation) {
-      console.log(data);
       toast("note is success to create!", {
         type: "success",
         position: "top-right",
       });
       queryClient.refetchQueries(useGetNotesQuery.getKey());
       setAddNoteModal(false);
+      setErrors({});
       formRef.current?.reset();
     },
     onError(error: any) {
-      console.log({ error });
+      setErrors(error?.response?.errors[0].extensions.data);
     },
   });
 
   function createNoteHandler(e: FormEvent) {
     e.preventDefault();
+    console.log(formData.title);
     mutate({
-      input: { title: formData.title, description: formData.description },
+      input: {
+        title: formData.title || "",
+        description: formData.description || "",
+      },
     });
   }
   return (
