@@ -5,11 +5,16 @@ import { GetServerSideProps } from "next";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
 import { useLoginMutation } from "@/generated/generated";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const queryClient = useQueryClient();
   const { isLoading, error, mutate } = useLoginMutation(graphqlRequestClient, {
     onSuccess(data: any) {
+      toast("Welcome back!", {
+        type: "success",
+        position: "top-right",
+      });
       return Router.push("/");
     },
     onError(error: any) {
