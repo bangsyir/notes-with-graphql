@@ -7,6 +7,16 @@ query GetNotes {
   }
 }
 
+query GetDeletedNotes {
+  getDeletedNotes {
+    id
+    title
+    description
+    createdAt
+    deletedAt
+  }
+}
+
 mutation AddNote($input: NoteInput) {
   addNote(input: $input) {
     errors {
