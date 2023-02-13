@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { toast } from "react-toastify";
 import EditNote from "@/components/EditNote";
+import Layouts from "@/components/Layouts";
 
 export default function Home() {
   const [addNotemodal, setAddNoteModal] = React.useState(false);
@@ -66,12 +67,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="container mx-auto px-4 pt-10 relative">
-        <Navbar setAddNoteModal={setAddNoteModal} />
-        <AddNote
-          addNoteModal={addNotemodal}
-          setAddNoteModal={setAddNoteModal}
-        />
+      <Layouts>
         {data?.getNotes?.length === 0 && (
           <div className="text-center">NO NOTES</div>
         )}
@@ -103,7 +99,7 @@ export default function Home() {
                     deleteNote.mutate({ noteId: Number(note?.id) })
                   }
                 >
-                  delete
+                  Move to trash
                 </button>
               </div>
             </div>
@@ -114,7 +110,7 @@ export default function Home() {
           setShow={setEditNoteModal}
           data={editData}
         />
-      </main>
+      </Layouts>
     </>
   );
 }
