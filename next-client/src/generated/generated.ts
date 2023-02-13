@@ -164,6 +164,11 @@ export type GetNotesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetNotesQuery = { __typename?: 'Query', getNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null } | null> | null };
 
+export type GetDeletedNotesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetDeletedNotesQuery = { __typename?: 'Query', getDeletedNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null, deletedAt?: string | null } | null> | null };
+
 export type AddNoteMutationVariables = Exact<{
   input?: InputMaybe<NoteInput>;
 }>;
@@ -246,6 +251,38 @@ useGetNotesQuery.getKey = (variables?: GetNotesQueryVariables) => variables === 
 ;
 
 useGetNotesQuery.fetcher = (client: GraphQLClient, variables?: GetNotesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetNotesQuery, GetNotesQueryVariables>(client, GetNotesDocument, variables, headers);
+export const GetDeletedNotesDocument = `
+    query GetDeletedNotes {
+  getDeletedNotes {
+    id
+    title
+    description
+    createdAt
+    deletedAt
+  }
+}
+    `;
+export const useGetDeletedNotesQuery = <
+      TData = GetDeletedNotesQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetDeletedNotesQueryVariables,
+      options?: UseQueryOptions<GetDeletedNotesQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetDeletedNotesQuery, TError, TData>(
+      variables === undefined ? ['GetDeletedNotes'] : ['GetDeletedNotes', variables],
+      fetcher<GetDeletedNotesQuery, GetDeletedNotesQueryVariables>(client, GetDeletedNotesDocument, variables, headers),
+      options
+    );
+useGetDeletedNotesQuery.document = GetDeletedNotesDocument;
+
+
+useGetDeletedNotesQuery.getKey = (variables?: GetDeletedNotesQueryVariables) => variables === undefined ? ['GetDeletedNotes'] : ['GetDeletedNotes', variables];
+;
+
+useGetDeletedNotesQuery.fetcher = (client: GraphQLClient, variables?: GetDeletedNotesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetDeletedNotesQuery, GetDeletedNotesQueryVariables>(client, GetDeletedNotesDocument, variables, headers);
 export const AddNoteDocument = `
     mutation AddNote($input: NoteInput) {
   addNote(input: $input) {
