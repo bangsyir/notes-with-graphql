@@ -34,9 +34,10 @@ const NoteResolver = {
         .getRepository(Note)
         .createQueryBuilder("notes")
         .withDeleted()
-        .where("notes.user_id = :userId & notes.deleted_at IS NOT NULL", {
+        .where("notes.user_id = :userId", {
           userId: auth.id,
         })
+        .andWhere("notes.deleted_at IS NOT NULL")
         .getMany();
       return notes;
     },
