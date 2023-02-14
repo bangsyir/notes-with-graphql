@@ -2,6 +2,7 @@ import Layouts from "@/components/Layouts";
 import {
   useDeleteNotePermanentMutation,
   useGetDeletedNotesQuery,
+  useRestoreNoteMutation,
 } from "@/generated/generated";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,6 +15,15 @@ export default function Trash() {
     onSuccess() {
       queryClient.refetchQueries(useGetDeletedNotesQuery.getKey());
       toast("note has been deleted", {
+        type: "success",
+        position: "top-right",
+      });
+    },
+  });
+  const restore = useRestoreNoteMutation(graphqlRequestClient, {
+    onSuccess() {
+      queryClient.refetchQueries(useGetDeletedNotesQuery.getKey());
+      toast("note has been restored", {
         type: "success",
         position: "top-right",
       });
@@ -41,6 +51,7 @@ export default function Trash() {
                 <button
                   type="submit"
                   className="border rounded-md px-2 bg-green-500 text-white"
+                  onClick={() => restore.mutate({ noteId: Number(note?.id) })}
                 >
                   restore
                 </button>
