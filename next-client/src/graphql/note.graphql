@@ -51,3 +51,7 @@ mutation DeleteNotePermanent($noteId: Int) {
     message
   }
 }
+
+mutation RestoreNote($noteId: Int) {
+  restoreNote(noteId: $noteId)
+}
