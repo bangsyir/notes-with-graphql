@@ -44,3 +44,10 @@ mutation DeleteNote($noteId: Int) {
     status
   }
 }
+
+mutation DeleteNotePermanent($noteId: Int) {
+  deleteNotePermanent(noteId: $noteId) {
+    status
+    message
+  }
+}
