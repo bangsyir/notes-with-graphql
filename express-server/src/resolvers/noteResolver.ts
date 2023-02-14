@@ -1,4 +1,5 @@
 import { GraphQLError } from "graphql";
+import { IsNull, Not } from "typeorm";
 import { conn } from "../data-source";
 import { Note } from "../entity/Note";
 import {
@@ -27,7 +28,7 @@ const NoteResolver = {
     getDeletedNotes: async (_: any, {}: any, { res, session }: MyContext) => {
       const auth = await Auth(session.sub, res);
       const notes = await Note.find({
-        where: { user: { id: auth.id } },
+        where: { user: { id: auth.id }, deletedAt: Not(IsNull()) },
         order: { createdAt: "DESC" },
         withDeleted: true,
       });
@@ -152,6 +153,21 @@ const NoteResolver = {
         });
       }
       return { status: "success", message: "note is deleted" };
+    },
+    async restoreNote(_: any, { noteId }: { noteId: number }) {
+      const restore = await conn
+        .getRepository(Note)
+        .createQueryBuilder("note")
+        .restore()
+        .where("id = :id", { id: noteId })
+        .execute();
+      if (restore.affected === 0) {
+        return ErrorResponse({
+          message: `note with id ${noteId} not found`,
+          status: 404,
+        });
+      }
+      return true;
     },
   },
 };
