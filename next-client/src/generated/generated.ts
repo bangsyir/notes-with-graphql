@@ -192,6 +192,13 @@ export type DeleteNoteMutationVariables = Exact<{
 
 export type DeleteNoteMutation = { __typename?: 'Mutation', deleteNote?: { __typename?: 'Response', message?: string | null, status?: string | null } | null };
 
+export type DeleteNotePermanentMutationVariables = Exact<{
+  noteId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type DeleteNotePermanentMutation = { __typename?: 'Mutation', deleteNotePermanent?: { __typename?: 'Response', status?: string | null, message?: string | null } | null };
+
 export type UserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -356,6 +363,28 @@ export const useDeleteNoteMutation = <
       options
     );
 useDeleteNoteMutation.fetcher = (client: GraphQLClient, variables?: DeleteNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<DeleteNoteMutation, DeleteNoteMutationVariables>(client, DeleteNoteDocument, variables, headers);
+export const DeleteNotePermanentDocument = `
+    mutation DeleteNotePermanent($noteId: Int) {
+  deleteNotePermanent(noteId: $noteId) {
+    status
+    message
+  }
+}
+    `;
+export const useDeleteNotePermanentMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<DeleteNotePermanentMutation, TError, DeleteNotePermanentMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<DeleteNotePermanentMutation, TError, DeleteNotePermanentMutationVariables, TContext>(
+      ['DeleteNotePermanent'],
+      (variables?: DeleteNotePermanentMutationVariables) => fetcher<DeleteNotePermanentMutation, DeleteNotePermanentMutationVariables>(client, DeleteNotePermanentDocument, variables, headers)(),
+      options
+    );
+useDeleteNotePermanentMutation.fetcher = (client: GraphQLClient, variables?: DeleteNotePermanentMutationVariables, headers?: RequestInit['headers']) => fetcher<DeleteNotePermanentMutation, DeleteNotePermanentMutationVariables>(client, DeleteNotePermanentDocument, variables, headers);
 export const UserDocument = `
     query user {
   getMe {
