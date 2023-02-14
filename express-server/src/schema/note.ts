@@ -35,6 +35,7 @@ const Note = `#graphql
     updateNote(noteId: Int, title: String, description: String): Note
     deleteNote(noteId: Int): Response
     deleteNotePermanent(noteId: Int):Response
+    restoreNote(noteId: Int):Boolean
   }
 `;
 export default Note;
