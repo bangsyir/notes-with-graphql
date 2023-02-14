@@ -1,13 +1,29 @@
 import Layouts from "@/components/Layouts";
-import { useGetDeletedNotesQuery } from "@/generated/generated";
+import {
+  useDeleteNotePermanentMutation,
+  useGetDeletedNotesQuery,
+} from "@/generated/generated";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
-
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 export default function Trash() {
+  const queryClient = useQueryClient();
   const { data } = useGetDeletedNotesQuery(graphqlRequestClient);
+
+  const { mutate } = useDeleteNotePermanentMutation(graphqlRequestClient, {
+    onSuccess() {
+      queryClient.refetchQueries(useGetDeletedNotesQuery.getKey());
+      toast("note has been deleted", {
+        type: "success",
+        position: "top-right",
+      });
+    },
+  });
   return (
     <>
       <Layouts>
-        <div>Trash</div>
+        <div className="font-bold pt-2 text-xl">Trash</div>
+        <hr className="border-b py-2" />
         <div className="grid gap-4">
           {data?.getDeletedNotes?.length === 0 && (
             <div className="text-center">NO NOTES</div>
@@ -25,15 +41,13 @@ export default function Trash() {
                 <button
                   type="submit"
                   className="border rounded-md px-2 bg-green-500 text-white"
-                  onClick={(e) => {
-                    const data = note;
-                  }}
                 >
                   restore
                 </button>
                 <button
                   type="submit"
                   className="border rounded-md px-2 bg-red-500 text-white"
+                  onClick={() => mutate({ noteId: Number(note?.id) })}
                 >
                   delete
                 </button>
