@@ -1,25 +1,18 @@
 import Head from "next/head";
 import { GetServerSideProps } from "next";
-import {
-  useGetNotesQuery,
-  useDeleteNoteMutation,
-  Note,
-} from "@/generated/generated";
+import { useGetNotesQuery, useDeleteNoteMutation } from "@/generated/generated";
 import graphqlRequestClient, {
   graphqlRequest,
 } from "@/request/graphqlRequestClient";
-import Navbar from "@/components/Navbar";
-import AddNote from "@/components/AddNote";
 import { dehydrate, QueryClient, useQueryClient } from "@tanstack/react-query";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { toast } from "react-toastify";
 import EditNote from "@/components/EditNote";
 import Layouts from "@/components/Layouts";
+import moment from "moment";
 
 export default function Home() {
-  const [addNotemodal, setAddNoteModal] = React.useState(false);
   const [editNoteModal, setEditNoteModal] = React.useState(false);
   const [editData, setEditData] = React.useState<{
     id?: string;
@@ -80,6 +73,9 @@ export default function Home() {
               <div>
                 <div className="text-medium font-bold">{note?.title}</div>
                 <div>{note?.description}</div>
+                <div>
+                  {moment(Number(note?.createdAt)).format("dddd DD/MM/YYYY")}
+                </div>
               </div>
               <div className="flex gap-2">
                 <button
