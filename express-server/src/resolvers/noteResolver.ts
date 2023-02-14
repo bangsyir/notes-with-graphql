@@ -147,13 +147,13 @@ const NoteResolver = {
       return { status: "success", message: "note is deleted" };
     },
     async deleteNotePermanent(parent: Note, args: { noteId: number }) {
+      console.log(args.noteId);
       const remove = await conn
         .getRepository(Note)
         .createQueryBuilder("notes")
         .delete()
         .where("id = :noteId", { noteId: args.noteId })
         .execute();
-      console.log(remove);
       if (remove.affected === 0) {
         return ErrorResponse({
           message: `note with id ${args.noteId} not found`,
