@@ -9,18 +9,14 @@ import {
 import { Auth } from "../helpers/auth";
 import { MyContext } from "../type";
 
-const noteRepository = conn.getRepository(Note);
-
 const NoteResolver = {
   Query: {
     getNotes: async (_: any, args: any, { res, session }: MyContext) => {
       const auth = await Auth(session.sub, res);
-      const notes = await conn
-        .getRepository(Note)
-        .createQueryBuilder("notes")
-        .where("notes.user_id = :userId", { userId: auth.id })
-        .orderBy("notes.created_at", "DESC")
-        .getMany();
+      const notes = await Note.find({
+        where: { user: { id: auth.id } },
+        order: { createdAt: "DESC" },
+      });
       if (!notes)
         return ErrorResponse({
           message: "you dosnt have not yet",
@@ -30,15 +26,11 @@ const NoteResolver = {
     },
     getDeletedNotes: async (_: any, {}: any, { res, session }: MyContext) => {
       const auth = await Auth(session.sub, res);
-      const notes = await conn
-        .getRepository(Note)
-        .createQueryBuilder("notes")
-        .withDeleted()
-        .where("notes.user_id = :userId", {
-          userId: auth.id,
-        })
-        .andWhere("notes.deleted_at IS NOT NULL")
-        .getMany();
+      const notes = await Note.find({
+        where: { user: { id: auth.id } },
+        order: { createdAt: "DESC" },
+        withDeleted: true,
+      });
       return notes;
     },
     getNote: async (
@@ -48,7 +40,7 @@ const NoteResolver = {
     ) => {
       const auth = await Auth(session.sub, res);
 
-      const note = await noteRepository.findOneBy({
+      const note = await Note.findOneBy({
         id: noteId,
         user: {
           id: auth.id,
@@ -83,7 +75,7 @@ const NoteResolver = {
       note.title = args.input.title;
       note.description = args.input.description;
       note.user = auth;
-      await conn.manager.save(note);
+      await note.save();
       return { note };
     },
     async updateNote(
@@ -99,8 +91,8 @@ const NoteResolver = {
       const auth = await Auth(session.sub, res);
 
       const errors = {
-        title: validateTitle(title) || undefined,
-        description: validateDesc(description) || undefined,
+        title: validateTitle(title),
+        description: validateDesc(description),
       };
 
       if (Object.values(errors).some(Boolean)) {
@@ -113,12 +105,13 @@ const NoteResolver = {
         });
       }
 
-      const note = await noteRepository.findOneBy({
+      const note = await Note.findOneBy({
         id: noteId,
         user: {
           id: auth.id,
         },
       });
+
       if (!note)
         return ErrorResponse({
           message: "note not found",
@@ -127,7 +120,7 @@ const NoteResolver = {
         });
       note.title = title;
       note.description = description;
-      await noteRepository.save(note);
+      await note.save();
       return note;
     },
     async deleteNote(parent: Note, args: { noteId: number }) {
@@ -137,7 +130,6 @@ const NoteResolver = {
         .softDelete()
         .where("id = :noteId", { noteId: args.noteId })
         .execute();
-      console.log(remove);
       if (remove.affected === 0) {
         return ErrorResponse({
           message: `note with id ${args.noteId} not found`,
@@ -147,7 +139,6 @@ const NoteResolver = {
       return { status: "success", message: "note is deleted" };
     },
     async deleteNotePermanent(parent: Note, args: { noteId: number }) {
-      console.log(args.noteId);
       const remove = await conn
         .getRepository(Note)
         .createQueryBuilder("notes")
