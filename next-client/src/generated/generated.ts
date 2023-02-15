@@ -101,12 +101,21 @@ export type NoteInput = {
   title: Scalars['String'];
 };
 
+export type NotesResponse = {
+  __typename?: 'NotesResponse';
+  count?: Maybe<Scalars['Int']>;
+  next?: Maybe<Scalars['Int']>;
+  notes?: Maybe<Array<Maybe<Note>>>;
+  page?: Maybe<Scalars['Int']>;
+  prev?: Maybe<Scalars['Int']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   getDeletedNotes?: Maybe<Array<Maybe<Note>>>;
   getMe?: Maybe<User>;
   getNote?: Maybe<Note>;
-  getNotes?: Maybe<Array<Maybe<Note>>>;
+  getNotes?: Maybe<NotesResponse>;
   getUser?: Maybe<User>;
   logout?: Maybe<Scalars['Boolean']>;
 };
@@ -119,6 +128,14 @@ export type QueryGetMeArgs = {
 
 export type QueryGetNoteArgs = {
   noteId?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetNotesArgs = {
+  keyword?: InputMaybe<Scalars['String']>;
+  next?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  prev?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -165,10 +182,12 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type GetNotesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetNotesQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']>;
+}>;
 
 
-export type GetNotesQuery = { __typename?: 'Query', getNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null } | null> | null };
+export type GetNotesQuery = { __typename?: 'Query', getNotes?: { __typename?: 'NotesResponse', page?: number | null, count?: number | null, next?: number | null, prev?: number | null, notes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null } | null> | null } | null };
 
 export type GetDeletedNotesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -241,12 +260,18 @@ export type RegisterMutation = { __typename?: 'Mutation', register?: { __typenam
 
 
 export const GetNotesDocument = `
-    query GetNotes {
-  getNotes {
-    id
-    title
-    description
-    createdAt
+    query GetNotes($page: Int) {
+  getNotes(page: $page) {
+    page
+    count
+    next
+    prev
+    notes {
+      id
+      title
+      description
+      createdAt
+    }
   }
 }
     `;
