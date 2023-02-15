@@ -1,9 +1,15 @@
-query GetNotes {
-  getNotes {
-    id
-    title
-    description
-    createdAt
+query GetNotes($page: Int) {
+  getNotes(page: $page) {
+    page
+    count
+    next
+    prev
+    notes {
+      id
+      title
+      description
+      createdAt
+    }
   }
 }
 
