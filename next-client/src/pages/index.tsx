@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import EditNote from "@/components/EditNote";
 import Layouts from "@/components/Layouts";
 import moment from "moment";
+import Link from "next/link";
 
 export default function Home() {
   const [editNoteModal, setEditNoteModal] = React.useState(false);
@@ -23,7 +24,7 @@ export default function Home() {
   const router = useRouter();
   const { data, isLoading } = useGetNotesQuery(
     graphqlRequestClient,
-    {},
+    { page: Number(router.query.page) },
     {
       onError(error: any) {
         if (error.response.status === 401) {
@@ -61,11 +62,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layouts>
-        {data?.getNotes?.length === 0 && (
+        {data?.getNotes?.notes?.length === 0 && (
           <div className="text-center">NO NOTES</div>
         )}
         <div className="flex flex-col gap-4 pt-4 mx-4">
-          {data?.getNotes?.map((note) => (
+          {data?.getNotes?.notes?.map((note) => (
             <div
               key={note?.id}
               className="flex justify-between items-start border rounded-md p-2"
@@ -100,6 +101,26 @@ export default function Home() {
               </div>
             </div>
           ))}
+          <div className="flex gap-4 justify-center">
+            <Link
+              href={`?page=${data?.getNotes?.prev}`}
+              className={`border px-2 rounded-md hover:shadow-md ${
+                data?.getNotes?.prev === null &&
+                "pointer-events-none bg-gray-200"
+              }`}
+            >
+              <span>Prev</span>
+            </Link>
+            <Link
+              href={`?page=${data?.getNotes?.next}`}
+              className={`border px-2 rounded-md hover:shadow-md ${
+                data?.getNotes?.next === null &&
+                "pointer-events-none bg-gray-200"
+              }`}
+            >
+              <span>Next</span>
+            </Link>
+          </div>
         </div>
         <EditNote
           show={editNoteModal}
@@ -115,7 +136,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const cookie = ctx.req.headers.cookie as string;
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery(
-    useGetNotesQuery.getKey(),
+    useGetNotesQuery.getKey({ page: Number(ctx.query.page) }),
     useGetNotesQuery.fetcher(graphqlRequest(cookie))
   );
   if (ctx.req.headers.cookie === undefined) {
