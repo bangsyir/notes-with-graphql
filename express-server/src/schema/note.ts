@@ -7,13 +7,20 @@ const Note = `#graphql
     updatedAt: String
     deletedAt: String
   }
+  type NotesResponse {
+    page: Int
+    count: Int 
+    next: Int 
+    prev: Int
+    notes: [Note]
+  }
   type Response {
     status: String,
     message: String
   }
 
   type Query {
-    getNotes: [Note]
+    getNotes(page: Int, next: Int, prev: Int, keyword: String): NotesResponse
     getNote(noteId: Int): Note
     getDeletedNotes: [Note]
   }
