@@ -11,7 +11,6 @@ export default function Login() {
   const queryClient = useQueryClient();
   const { isLoading, error, mutate } = useLoginMutation(graphqlRequestClient, {
     onSuccess(data) {
-      console.log(data.login?.user?.name);
       toast(`Welcome back ${data.login?.user?.name}!`, {
         type: "success",
         position: "top-right",
