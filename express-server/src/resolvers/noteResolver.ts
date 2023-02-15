@@ -12,18 +12,35 @@ import { MyContext } from "../type";
 
 const NoteResolver = {
   Query: {
-    getNotes: async (_: any, args: any, { res, session }: MyContext) => {
+    getNotes: async (
+      _: any,
+      { take, page, skip }: { take: number; page: number; skip: number },
+      { res, session }: MyContext
+    ) => {
       const auth = await Auth(session.sub, res);
+      var take = take || 5;
+      var page = page ? page : 1;
+      var skip = (page - 1) * take;
       const notes = await Note.find({
         where: { user: { id: auth.id } },
+        take: take,
+        skip: skip,
         order: { createdAt: "DESC" },
       });
+      const count = await Note.count({
+        where: {
+          user: { id: auth.id },
+        },
+      });
+      const pageCount = Math.ceil(count / take);
+      var next = pageCount > page ? page + 1 : null;
+      var prev = page > 1 ? page - 1 : null;
       if (!notes)
         return ErrorResponse({
           message: "you dosnt have not yet",
           status: 400,
         });
-      return notes;
+      return { page, count, next, prev, notes };
     },
     getDeletedNotes: async (_: any, {}: any, { res, session }: MyContext) => {
       const auth = await Auth(session.sub, res);
