@@ -112,12 +112,20 @@ export type NotesResponse = {
 
 export type Query = {
   __typename?: 'Query';
-  getDeletedNotes?: Maybe<Array<Maybe<Note>>>;
+  getDeletedNotes?: Maybe<NotesResponse>;
   getMe?: Maybe<User>;
   getNote?: Maybe<Note>;
   getNotes?: Maybe<NotesResponse>;
   getUser?: Maybe<User>;
   logout?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type QueryGetDeletedNotesArgs = {
+  keyword?: InputMaybe<Scalars['String']>;
+  next?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  prev?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -189,10 +197,12 @@ export type GetNotesQueryVariables = Exact<{
 
 export type GetNotesQuery = { __typename?: 'Query', getNotes?: { __typename?: 'NotesResponse', page?: number | null, count?: number | null, next?: number | null, prev?: number | null, notes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null } | null> | null } | null };
 
-export type GetDeletedNotesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetDeletedNotesQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']>;
+}>;
 
 
-export type GetDeletedNotesQuery = { __typename?: 'Query', getDeletedNotes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null, deletedAt?: string | null } | null> | null };
+export type GetDeletedNotesQuery = { __typename?: 'Query', getDeletedNotes?: { __typename?: 'NotesResponse', page?: number | null, count?: number | null, next?: number | null, prev?: number | null, notes?: Array<{ __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null, deletedAt?: string | null } | null> | null } | null };
 
 export type AddNoteMutationVariables = Exact<{
   input?: InputMaybe<NoteInput>;
@@ -297,13 +307,19 @@ useGetNotesQuery.getKey = (variables?: GetNotesQueryVariables) => variables === 
 
 useGetNotesQuery.fetcher = (client: GraphQLClient, variables?: GetNotesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetNotesQuery, GetNotesQueryVariables>(client, GetNotesDocument, variables, headers);
 export const GetDeletedNotesDocument = `
-    query GetDeletedNotes {
-  getDeletedNotes {
-    id
-    title
-    description
-    createdAt
-    deletedAt
+    query GetDeletedNotes($page: Int) {
+  getDeletedNotes(page: $page) {
+    page
+    count
+    next
+    prev
+    notes {
+      id
+      title
+      description
+      createdAt
+      deletedAt
+    }
   }
 }
     `;

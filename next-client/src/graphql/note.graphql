@@ -13,13 +13,19 @@ query GetNotes($page: Int) {
   }
 }
 
-query GetDeletedNotes {
-  getDeletedNotes {
-    id
-    title
-    description
-    createdAt
-    deletedAt
+query GetDeletedNotes($page: Int) {
+  getDeletedNotes(page: $page) {
+    page
+    count
+    next
+    prev
+    notes {
+      id
+      title
+      description
+      createdAt
+      deletedAt
+    }
   }
 }
 
