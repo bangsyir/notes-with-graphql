@@ -1,8 +1,4 @@
-import {
-  LogoutQuery,
-  useLogoutQuery,
-  useUserQuery,
-} from "@/generated/generated";
+import { useLogoutQuery, useUserQuery } from "@/generated/generated";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -14,15 +10,22 @@ import { TrashIcon } from "./icons/TrashIcon";
 export default function Navbar() {
   const [addNotemodal, setAddNoteModal] = React.useState(false);
   const router = useRouter();
-  const user = useUserQuery(graphqlRequestClient);
+  const { data, isLoading } = useUserQuery(
+    graphqlRequestClient,
+    {},
+    {
+      cacheTime: 300000,
+      keepPreviousData: true,
+      enabled: true,
+    }
+  );
   const queryClient = useQueryClient();
   const { refetch } = useLogoutQuery(
     graphqlRequestClient,
     {},
     {
       enabled: false,
-      onSuccess(data: LogoutQuery) {
-        console.log(data);
+      onSuccess() {
         queryClient.clear();
         router.push("/login");
       },
@@ -46,7 +49,13 @@ export default function Navbar() {
         <div className="flex gap-4 items-center">
           <div>
             <Link href={"/trash"}>
-              <TrashIcon className="h-5 w-5 text-cyan-200" />
+              <TrashIcon
+                className={`h-5 w-5 ${
+                  router.pathname === "/trash"
+                    ? "text-red-400 text-sha"
+                    : "text-cyan-200"
+                }`}
+              />
             </Link>
           </div>
           {router.pathname === "/" && (
@@ -60,7 +69,7 @@ export default function Navbar() {
             </div>
           )}
           <span className="font-semibold text-cyan-100">
-            {user.data?.getMe?.name}
+            {isLoading ? <div>Loading...</div> : data?.getMe?.name}
           </span>
           <button
             type="submit"
