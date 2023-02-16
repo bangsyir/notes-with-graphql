@@ -22,7 +22,7 @@ const Note = `#graphql
   type Query {
     getNotes(page: Int, next: Int, prev: Int, keyword: String): NotesResponse
     getNote(noteId: Int): Note
-    getDeletedNotes: [Note]
+    getDeletedNotes(page: Int, next: Int, prev: Int, keyword: String): NotesResponse
   }
   input NoteInput {
     title: String!
