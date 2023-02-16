@@ -14,11 +14,11 @@ const NoteResolver = {
   Query: {
     getNotes: async (
       _: any,
-      { take, page, skip }: { take: number; page: number; skip: number },
+      { page }: { page: number },
       { res, session }: MyContext
     ) => {
       const auth = await Auth(session.sub, res);
-      var take = take || 5;
+      var take = 5;
       var page = page ? page : 1;
       var skip = (page - 1) * take;
       const notes = await Note.find({
@@ -42,14 +42,32 @@ const NoteResolver = {
         });
       return { page, count, next, prev, notes };
     },
-    getDeletedNotes: async (_: any, {}: any, { res, session }: MyContext) => {
+    getDeletedNotes: async (
+      _: any,
+      { page }: { page: number },
+      { res, session }: MyContext
+    ) => {
       const auth = await Auth(session.sub, res);
+      var take = 5;
+      var page = page ? page : 1;
+      var skip = (page - 1) * take;
+
       const notes = await Note.find({
+        where: { user: { id: auth.id }, deletedAt: Not(IsNull()) },
+        take: take,
+        skip: skip,
+        order: { createdAt: "DESC" },
+        withDeleted: true,
+      });
+      const count = await Note.count({
         where: { user: { id: auth.id }, deletedAt: Not(IsNull()) },
         order: { createdAt: "DESC" },
         withDeleted: true,
       });
-      return notes;
+      const pageCount = Math.ceil(count / take);
+      var next = pageCount > page ? page + 1 : null;
+      var prev = page > 1 ? page - 1 : null;
+      return { page, count, next, prev, notes };
     },
     getNote: async (
       _: any,
