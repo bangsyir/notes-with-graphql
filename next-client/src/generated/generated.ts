@@ -40,6 +40,7 @@ export type Mutation = {
   addNote?: Maybe<AddNote>;
   deleteNote?: Maybe<Response>;
   deleteNotePermanent?: Maybe<Response>;
+  deleteNotesMany?: Maybe<Response>;
   login?: Maybe<UserResponse>;
   register?: Maybe<RegisterResponse>;
   restoreNote?: Maybe<Scalars['Boolean']>;
@@ -59,6 +60,11 @@ export type MutationDeleteNoteArgs = {
 
 export type MutationDeleteNotePermanentArgs = {
   noteId?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationDeleteNotesManyArgs = {
+  noteIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 
@@ -226,6 +232,13 @@ export type DeleteNoteMutationVariables = Exact<{
 
 
 export type DeleteNoteMutation = { __typename?: 'Mutation', deleteNote?: { __typename?: 'Response', message?: string | null, status?: string | null } | null };
+
+export type DeleteNotesManyMutationVariables = Exact<{
+  noteIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>> | InputMaybe<Scalars['Int']>>;
+}>;
+
+
+export type DeleteNotesManyMutation = { __typename?: 'Mutation', deleteNotesMany?: { __typename?: 'Response', status?: string | null, message?: string | null } | null };
 
 export type DeleteNotePermanentMutationVariables = Exact<{
   noteId?: InputMaybe<Scalars['Int']>;
@@ -417,6 +430,28 @@ export const useDeleteNoteMutation = <
       options
     );
 useDeleteNoteMutation.fetcher = (client: GraphQLClient, variables?: DeleteNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<DeleteNoteMutation, DeleteNoteMutationVariables>(client, DeleteNoteDocument, variables, headers);
+export const DeleteNotesManyDocument = `
+    mutation DeleteNotesMany($noteIds: [Int]) {
+  deleteNotesMany(noteIds: $noteIds) {
+    status
+    message
+  }
+}
+    `;
+export const useDeleteNotesManyMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<DeleteNotesManyMutation, TError, DeleteNotesManyMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<DeleteNotesManyMutation, TError, DeleteNotesManyMutationVariables, TContext>(
+      ['DeleteNotesMany'],
+      (variables?: DeleteNotesManyMutationVariables) => fetcher<DeleteNotesManyMutation, DeleteNotesManyMutationVariables>(client, DeleteNotesManyDocument, variables, headers)(),
+      options
+    );
+useDeleteNotesManyMutation.fetcher = (client: GraphQLClient, variables?: DeleteNotesManyMutationVariables, headers?: RequestInit['headers']) => fetcher<DeleteNotesManyMutation, DeleteNotesManyMutationVariables>(client, DeleteNotesManyDocument, variables, headers);
 export const DeleteNotePermanentDocument = `
     mutation DeleteNotePermanent($noteId: Int) {
   deleteNotePermanent(noteId: $noteId) {
