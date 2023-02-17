@@ -57,7 +57,6 @@ export default function Home(
   const deleteNotesMany = useDeleteNotesManyMutation(graphqlRequestClient, {
     onSuccess(data: any) {
       queryClient.refetchQueries(useGetNotesQuery.getKey());
-      console.log(data);
       toast(data?.deleteNotesMany.message, {
         type: "success",
         position: "top-right",
