@@ -41,6 +41,7 @@ const Note = `#graphql
     addNote(input:NoteInput): AddNote
     updateNote(noteId: Int, title: String, description: String): Note
     deleteNote(noteId: Int): Response
+    deleteNotesMany(noteIds:[Int]): Response
     deleteNotePermanent(noteId: Int):Response
     restoreNote(noteId: Int):Boolean
   }
