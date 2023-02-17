@@ -174,6 +174,34 @@ const NoteResolver = {
       }
       return { status: "success", message: "note is deleted" };
     },
+    async deleteNotesMany(
+      _: any,
+      args: { noteIds: number[] },
+      { res, session }: MyContext
+    ) {
+      const auth = await Auth(session.sub, res);
+      const ids = args.noteIds;
+      console.log(auth.id);
+      const deleteMany = await conn
+        .createQueryBuilder()
+        .softDelete()
+        .from(Note)
+        .where("user_id = :userId", { userId: auth.id })
+        .andWhere("id IN (:...id)", { id: ids })
+        .execute();
+
+      console.log(deleteMany);
+      if (deleteMany.affected === 0) {
+        return ErrorResponse({
+          message: `opss some id is not found`,
+          status: 400,
+        });
+      }
+      return {
+        status: "success",
+        message: "all notes selected success deleted",
+      };
+    },
     async deleteNotePermanent(parent: Note, args: { noteId: number }) {
       const remove = await conn
         .getRepository(Note)
@@ -184,7 +212,7 @@ const NoteResolver = {
       if (remove.affected === 0) {
         return ErrorResponse({
           message: `note with id ${args.noteId} not found`,
-          status: 404,
+          status: 400,
         });
       }
       return { status: "success", message: "note is deleted" };
