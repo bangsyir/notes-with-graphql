@@ -57,6 +57,13 @@ mutation DeleteNote($noteId: Int) {
   }
 }
 
+mutation DeleteNotesMany($noteIds: [Int]) {
+  deleteNotesMany(noteIds: $noteIds) {
+    status
+    message
+  }
+}
+
 mutation DeleteNotePermanent($noteId: Int) {
   deleteNotePermanent(noteId: $noteId) {
     status
