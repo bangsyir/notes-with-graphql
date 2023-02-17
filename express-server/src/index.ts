@@ -53,7 +53,7 @@ async function main() {
         embed: false,
       }),
     ],
-    includeStacktraceInErrorResponses: false,
+    includeStacktraceInErrorResponses: true,
   });
   // ensure we wait for our server to start
   await server.start();
