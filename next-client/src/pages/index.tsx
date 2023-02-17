@@ -1,6 +1,10 @@
 import Head from "next/head";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useGetNotesQuery, useDeleteNoteMutation } from "@/generated/generated";
+import {
+  useGetNotesQuery,
+  useDeleteNoteMutation,
+  useDeleteNotesManyMutation,
+} from "@/generated/generated";
 import graphqlRequestClient, {
   graphqlRequest,
 } from "@/request/graphqlRequestClient";
@@ -16,6 +20,7 @@ import Link from "next/link";
 export default function Home(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
+  const [ids, setIds] = React.useState<number[]>([]);
   const [editNoteModal, setEditNoteModal] = React.useState(false);
   const [editData, setEditData] = React.useState<{
     id?: string;
@@ -49,10 +54,38 @@ export default function Home(
     },
   });
 
+  const deleteNotesMany = useDeleteNotesManyMutation(graphqlRequestClient, {
+    onSuccess(data: any) {
+      queryClient.refetchQueries(useGetNotesQuery.getKey());
+      console.log(data);
+      toast(data?.deleteNotesMany.message, {
+        type: "success",
+        position: "top-right",
+      });
+      setIds([]);
+    },
+    onError() {
+      toast("opss something wrong!!!", {
+        type: "error",
+        position: "top-right",
+      });
+    },
+  });
+
   function openEditHandler(e: React.SyntheticEvent, data: any) {
     e.preventDefault();
     setEditNoteModal(!editNoteModal);
     setEditData(data);
+  }
+  function markCheckboxHandler(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.checked) {
+      setIds((old) => [...old, Number(e.target.value)]);
+    } else {
+      setIds(ids.filter((id) => id !== Number(e.target.value)));
+    }
+  }
+  function deleteNotesManyHandler() {
+    deleteNotesMany.mutate({ noteIds: ids });
   }
   return (
     <>
@@ -68,18 +101,41 @@ export default function Home(
           <div className="text-center">NO NOTES</div>
         )}
         <div className="flex flex-col gap-4 pt-4 mx-4">
-          <span className="font-bold text-lg">Home</span>
+          <div className="flex items-center gap-4">
+            <span className="font-bold text-lg">Home</span>
+            {/* {ids.length! !== 0 && ( */}
+            <button
+              className={`transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white ${
+                ids.length !== 0 ? "z-50 opacity-100" : "-z-50 opacity-0"
+              }`}
+              onClick={deleteNotesManyHandler}
+            >
+              {ids.length > 1 ? "move all to trash" : "move to trash"}
+            </button>
+            {/* )} */}
+          </div>
           {data?.getNotes?.notes?.map((note) => (
             <div
               key={note?.id}
               className="flex justify-between items-start border rounded-md p-2"
             >
-              <div>
-                <div className="text-medium font-bold">{note?.title}</div>
-                <div>{note?.description}</div>
-                <small className="text-gray-500">
-                  {moment(Number(note?.createdAt)).format("dddd DD/MM/YYYY")}
-                </small>
+              <div className="flex gap-2">
+                <div>
+                  <input
+                    type="checkbox"
+                    value={note?.id}
+                    checked={ids.includes(Number(note?.id))}
+                    className="accent-orange-300"
+                    onChange={markCheckboxHandler}
+                  />
+                </div>
+                <div>
+                  <div className="text-medium font-bold">{note?.title}</div>
+                  <div>{note?.description}</div>
+                  <small className="text-gray-500">
+                    {moment(Number(note?.createdAt)).format("dddd DD/MM/YYYY")}
+                  </small>
+                </div>
               </div>
               <div className="flex gap-2">
                 <button
