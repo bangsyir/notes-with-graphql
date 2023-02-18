@@ -29,7 +29,7 @@ export default function Login() {
     // const signin = await login({
     //   variables: { email: formData.email, password: formData.password },
     // });
-    mutate({ email: formData.email, password: formData.password });
+    mutate({ email: formData.email || "", password: formData.password || "" });
   };
   return (
     <>
