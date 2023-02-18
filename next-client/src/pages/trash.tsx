@@ -2,6 +2,7 @@ import Layouts from "@/components/Layouts";
 import {
   useDeleteNotePermanentMutation,
   useGetDeletedNotesQuery,
+  useRestoreAllNotesMutation,
   useRestoreNoteMutation,
 } from "@/generated/generated";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
@@ -10,8 +11,11 @@ import moment from "moment";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { toast } from "react-toastify";
+
 export default function Trash() {
+  const [ids, setIds] = useState<number[]>([]);
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data, isLoading } = useGetDeletedNotesQuery(
@@ -42,6 +46,29 @@ export default function Trash() {
       });
     },
   });
+  const restoreAll = useRestoreAllNotesMutation(graphqlRequestClient, {
+    onSuccess(data) {
+      queryClient.refetchQueries(useGetDeletedNotesQuery.getKey());
+      toast(data.restoreAllNotes?.message, {
+        type: "success",
+        position: "top-right",
+      });
+      setIds([]);
+    },
+  });
+
+  function markCheckboxHandler(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.checked) {
+      setIds((old) => [...old, Number(e.target.value)]);
+    } else {
+      setIds(ids.filter((id) => id !== Number(e.target.value)));
+    }
+  }
+  function markAllCheckboxHandler() {
+    const noteids =
+      data?.getDeletedNotes?.notes?.map((note) => Number(note?.id)) || [];
+    setIds(ids.concat(noteids.filter((item) => ids.indexOf(item) < 0)));
+  }
   return (
     <>
       <Head>
@@ -52,27 +79,71 @@ export default function Trash() {
       </Head>
       <Layouts>
         <div className="grid gap-4">
+          <div className="flex gap-4 items-center pt-4">
+            <span className="font-bold text-lg">Trash</span>
+            <button
+              className="border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white"
+              onClick={markAllCheckboxHandler}
+            >
+              select all
+            </button>
+            {ids.length > 1 && (
+              <button
+                className="border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white"
+                onClick={() => setIds([])}
+              >
+                unselect all
+              </button>
+            )}
+            <button
+              className={`transition duration-300 ease-in-out border border-green-500 rounded-md px-3 text-green-500 hover:bg-green-500 hover:text-white ${
+                ids.length !== 0 ? "z-50 opacity-100" : "-z-50 opacity-0"
+              }`}
+              onClick={() => restoreAll.mutate({ noteIds: ids })}
+            >
+              {ids.length === 1 ? "restore" : "restore all"}
+            </button>
+            <button
+              className={`transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white ${
+                ids.length !== 0 ? "z-50 opacity-100" : "-z-50 opacity-0"
+              }`}
+            >
+              {ids.length === 1 ? "delete" : "delete all"}
+            </button>
+          </div>
           {isLoading && <div className="text-center">Loading....</div>}
           {data?.getDeletedNotes?.notes?.length === 0 && (
             <div className="text-center">NO NOTES</div>
           )}
-          <span className="font-bold text-lg">Trash</span>
           {data?.getDeletedNotes?.notes?.map((note) => (
             <div
               key={note?.id}
               className="flex justify-between items-start border rounded-md p-2"
             >
-              <div>
-                <div className="text-medium font-bold">{note?.title}</div>
-                <div>{note?.description}</div>
-                <div className="flex justify-between gap-4">
-                  <small className="text-gray-500">
-                    {moment(Number(note?.createdAt)).format("dddd DD/MM/YYYY")}
-                  </small>
-                  <small className="text-gray-500">
-                    deleted:{" "}
-                    {moment(Number(note?.deletedAt)).format("dddd DD/MM/YYYY")}
-                  </small>
+              <div className="flex gap-4">
+                <input
+                  type="checkbox"
+                  name="ids"
+                  checked={ids.includes(Number(note?.id))}
+                  value={note?.id}
+                  onChange={markCheckboxHandler}
+                />
+                <div>
+                  <div className="text-medium font-bold">{note?.title}</div>
+                  <div>{note?.description}</div>
+                  <div className="flex justify-between gap-4">
+                    <small className="text-gray-500">
+                      {moment(Number(note?.createdAt)).format(
+                        "dddd DD/MM/YYYY"
+                      )}
+                    </small>
+                    <small className="text-gray-500">
+                      deleted:{" "}
+                      {moment(Number(note?.deletedAt)).format(
+                        "dddd DD/MM/YYYY"
+                      )}
+                    </small>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-2">
