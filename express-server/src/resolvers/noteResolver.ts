@@ -181,7 +181,6 @@ const NoteResolver = {
     ) {
       const auth = await Auth(session.sub, res);
       const ids = args.noteIds;
-      console.log(auth.id);
       const deleteMany = await conn
         .createQueryBuilder()
         .softDelete()
@@ -190,7 +189,6 @@ const NoteResolver = {
         .andWhere("id IN (:...id)", { id: ids })
         .execute();
 
-      console.log(deleteMany);
       if (deleteMany.affected === 0) {
         return ErrorResponse({
           message: `opss some id is not found`,
@@ -231,6 +229,27 @@ const NoteResolver = {
         });
       }
       return true;
+    },
+    async restoreAllNotes(
+      _: any,
+      { noteIds }: { noteIds: number[] },
+      { res, session }: MyContext
+    ) {
+      const auth = await Auth(session.sub, res);
+      const restoreAll = await conn
+        .createQueryBuilder()
+        .restore()
+        .from(Note)
+        .where("user_id = :userId", { userId: auth.id })
+        .andWhere("id IN(:...ids)", { ids: noteIds })
+        .execute();
+      if (restoreAll.affected === 0) {
+        return ErrorResponse({
+          message: `opss some id is not found`,
+          status: 400,
+        });
+      }
+      return { status: "success", message: "all selected note is restored" };
     },
   },
 };
