@@ -43,6 +43,7 @@ export type Mutation = {
   deleteNotesMany?: Maybe<Response>;
   login?: Maybe<UserResponse>;
   register?: Maybe<RegisterResponse>;
+  restoreAllNotes?: Maybe<Response>;
   restoreNote?: Maybe<Scalars['Boolean']>;
   updateNote?: Maybe<Note>;
 };
@@ -78,6 +79,11 @@ export type MutationRegisterArgs = {
   email?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   password?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationRestoreAllNotesArgs = {
+  noteIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 
@@ -253,6 +259,13 @@ export type RestoreNoteMutationVariables = Exact<{
 
 
 export type RestoreNoteMutation = { __typename?: 'Mutation', restoreNote?: boolean | null };
+
+export type RestoreAllNotesMutationVariables = Exact<{
+  noteIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>> | InputMaybe<Scalars['Int']>>;
+}>;
+
+
+export type RestoreAllNotesMutation = { __typename?: 'Mutation', restoreAllNotes?: { __typename?: 'Response', status?: string | null, message?: string | null } | null };
 
 export type UserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -493,6 +506,28 @@ export const useRestoreNoteMutation = <
       options
     );
 useRestoreNoteMutation.fetcher = (client: GraphQLClient, variables?: RestoreNoteMutationVariables, headers?: RequestInit['headers']) => fetcher<RestoreNoteMutation, RestoreNoteMutationVariables>(client, RestoreNoteDocument, variables, headers);
+export const RestoreAllNotesDocument = `
+    mutation RestoreAllNotes($noteIds: [Int]) {
+  restoreAllNotes(noteIds: $noteIds) {
+    status
+    message
+  }
+}
+    `;
+export const useRestoreAllNotesMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<RestoreAllNotesMutation, TError, RestoreAllNotesMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<RestoreAllNotesMutation, TError, RestoreAllNotesMutationVariables, TContext>(
+      ['RestoreAllNotes'],
+      (variables?: RestoreAllNotesMutationVariables) => fetcher<RestoreAllNotesMutation, RestoreAllNotesMutationVariables>(client, RestoreAllNotesDocument, variables, headers)(),
+      options
+    );
+useRestoreAllNotesMutation.fetcher = (client: GraphQLClient, variables?: RestoreAllNotesMutationVariables, headers?: RequestInit['headers']) => fetcher<RestoreAllNotesMutation, RestoreAllNotesMutationVariables>(client, RestoreAllNotesDocument, variables, headers);
 export const UserDocument = `
     query user {
   getMe {
