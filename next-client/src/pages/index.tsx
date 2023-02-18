@@ -84,13 +84,9 @@ export default function Home(
     }
   }
   function markAllCheckboxHandler() {
-    if (ids.length === 0) {
-      const noteids =
-        data?.getNotes?.notes?.map((note) => Number(note?.id)) || [];
-      setIds(noteids);
-    } else {
-      setIds([]);
-    }
+    const noteids =
+      data?.getNotes?.notes?.map((note) => Number(note?.id)) || [];
+    setIds(ids.concat(noteids.filter((item) => ids.indexOf(item) < 0)));
   }
   function deleteNotesManyHandler() {
     deleteNotesMany.mutate({ noteIds: ids });
@@ -116,12 +112,16 @@ export default function Home(
               className="transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white"
               onClick={markAllCheckboxHandler}
             >
-              {ids.length === 0
-                ? "Select all"
-                : ids.length === 1
-                ? "Unselect"
-                : "Unselect all"}
+              Select all
             </button>
+            {ids.length > 1 && (
+              <button
+                className="transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white"
+                onClick={() => setIds([])}
+              >
+                Unselect all
+              </button>
+            )}
             <button
               className={`transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white ${
                 ids.length !== 0 ? "z-50 opacity-100" : "-z-50 opacity-0"
