@@ -126,6 +126,7 @@ export default function Trash() {
                   name="ids"
                   checked={ids.includes(Number(note?.id))}
                   value={note?.id}
+                  className="accent-orange-300"
                   onChange={markCheckboxHandler}
                 />
                 <div>
