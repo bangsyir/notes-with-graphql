@@ -83,9 +83,19 @@ export default function Home(
       setIds(ids.filter((id) => id !== Number(e.target.value)));
     }
   }
+  function markAllCheckboxHandler() {
+    if (ids.length === 0) {
+      const noteids =
+        data?.getNotes?.notes?.map((note) => Number(note?.id)) || [];
+      setIds(noteids);
+    } else {
+      setIds([]);
+    }
+  }
   function deleteNotesManyHandler() {
     deleteNotesMany.mutate({ noteIds: ids });
   }
+
   return (
     <>
       <Head>
@@ -102,7 +112,16 @@ export default function Home(
         <div className="flex flex-col gap-4 pt-4 mx-4">
           <div className="flex items-center gap-4">
             <span className="font-bold text-lg">Home</span>
-            {/* {ids.length! !== 0 && ( */}
+            <button
+              className="transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white"
+              onClick={markAllCheckboxHandler}
+            >
+              {ids.length === 0
+                ? "Select all"
+                : ids.length === 1
+                ? "Unselect"
+                : "Unselect all"}
+            </button>
             <button
               className={`transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white ${
                 ids.length !== 0 ? "z-50 opacity-100" : "-z-50 opacity-0"
@@ -111,7 +130,6 @@ export default function Home(
             >
               {ids.length > 1 ? "move all to trash" : "move to trash"}
             </button>
-            {/* )} */}
           </div>
           {data?.getNotes?.notes?.map((note) => (
             <div
