@@ -1,6 +1,8 @@
 import Layouts from "@/components/Layouts";
 import {
   useDeleteNotePermanentMutation,
+  useDeleteNotesManyMutation,
+  useDeleteNotesManyPermanentMutation,
   useGetDeletedNotesQuery,
   useRestoreAllNotesMutation,
   useRestoreNoteMutation,
@@ -32,6 +34,15 @@ export default function Trash() {
     onSuccess() {
       queryClient.refetchQueries(useGetDeletedNotesQuery.getKey());
       toast("note has been deleted", {
+        type: "success",
+        position: "top-right",
+      });
+    },
+  });
+  const deleteAll = useDeleteNotesManyPermanentMutation(graphqlRequestClient, {
+    onSuccess(data) {
+      queryClient.refetchQueries(useGetDeletedNotesQuery.getKey());
+      toast(data.deleteNotesManyPermanent?.message, {
         type: "success",
         position: "top-right",
       });
@@ -107,6 +118,7 @@ export default function Trash() {
               className={`transition duration-300 ease-in-out border border-red-500 rounded-md px-3 text-red-500 hover:bg-red-500 hover:text-white ${
                 ids.length !== 0 ? "z-50 opacity-100" : "-z-50 opacity-0"
               }`}
+              onClick={() => deleteAll.mutate({ noteIds: ids })}
             >
               {ids.length === 1 ? "delete" : "delete all"}
             </button>
