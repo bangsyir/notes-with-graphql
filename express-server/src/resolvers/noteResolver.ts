@@ -215,6 +215,31 @@ const NoteResolver = {
       }
       return { status: "success", message: "note is deleted" };
     },
+    async deleteNotesManyPermanent(
+      _: any,
+      { noteIds }: { noteIds: number },
+      { res, session }: MyContext
+    ) {
+      const auth = await Auth(session.sub, res);
+      const remove = await conn
+        .createQueryBuilder()
+        .delete()
+        .from(Note)
+        .where("user_id = :userId", { userId: auth.id })
+        .andWhere("id IN (:...ids)", { ids: noteIds })
+        .execute();
+
+      if (remove.affected === 0) {
+        return ErrorResponse({
+          message: `opss some id is not found`,
+          status: 400,
+        });
+      }
+      return {
+        status: "success",
+        message: "all notes successfull remove permanently",
+      };
+    },
     async restoreNote(_: any, { noteId }: { noteId: number }) {
       const restore = await conn
         .getRepository(Note)
