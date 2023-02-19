@@ -1,7 +1,6 @@
 import Layouts from "@/components/Layouts";
 import {
   useDeleteNotePermanentMutation,
-  useDeleteNotesManyMutation,
   useDeleteNotesManyPermanentMutation,
   useGetDeletedNotesQuery,
   useRestoreAllNotesMutation,
