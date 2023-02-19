@@ -43,6 +43,7 @@ const Note = `#graphql
     deleteNote(noteId: Int): Response
     deleteNotesMany(noteIds:[Int]): Response
     deleteNotePermanent(noteId: Int):Response
+    deleteNotesManyPermanent(noteIds: [Int]):Response
     restoreAllNotes(noteIds: [Int]): Response
     restoreNote(noteId: Int):Boolean
   }
