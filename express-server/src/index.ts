@@ -7,7 +7,7 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
-import bodyParser from "body-parser";
+import { json } from "body-parser";
 import Redis from "ioredis";
 import session from "express-session";
 import connectRedis from "connect-redis";
@@ -18,6 +18,7 @@ import UserResolver from "./resolvers/userResolver";
 import User from "./schema/user";
 import { MyContext } from "./type";
 import { __prod__ } from "./constants";
+import { graphqlUploadExpress } from "graphql-upload-ts";
 
 dotenv.config();
 
@@ -46,6 +47,8 @@ async function main() {
   const server = new ApolloServer({
     typeDefs: [Note, User],
     resolvers: [NoteResolver, UserResolver],
+    csrfPrevention: true,
+    cache: "bounded",
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageLocalDefault({
@@ -60,10 +63,11 @@ async function main() {
 
   const SESSION_SECRET = process.env.SESSION_SECRET as string;
 
-  app.set("trust proxy", 1);
+  // app.set("trust proxy", 1);
 
   app.use(
     "/graphql",
+    graphqlUploadExpress({ maxFileSize: 10000000 }),
     cors<cors.CorsRequest>({
       credentials: true,
       origin: ["https://studio.apollographql.com", "http://localhost:3000"],
@@ -84,7 +88,8 @@ async function main() {
       resave: false,
       saveUninitialized: false,
     }),
-    bodyParser.json(),
+    json(),
+
     // expressMiddlware accept the same arguments:
     // an Apollo Server instance and optional configuration options
     expressMiddleware<MyContext>(server, {
