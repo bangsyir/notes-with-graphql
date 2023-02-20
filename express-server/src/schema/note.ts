@@ -1,4 +1,6 @@
 const Note = `#graphql
+
+  scalar Upload
   type Note {
     id: ID!
     title: String
@@ -46,6 +48,8 @@ const Note = `#graphql
     deleteNotesManyPermanent(noteIds: [Int]):Response
     restoreAllNotes(noteIds: [Int]): Response
     restoreNote(noteId: Int):Boolean
+
+    singleUpload(file: Upload!): Response
   }
 `;
 export default Note;
