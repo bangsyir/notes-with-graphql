@@ -9,6 +9,8 @@ import {
 } from "../handler/errorHandler";
 import { Auth } from "../helpers/auth";
 import { MyContext } from "../type";
+import { finished } from "stream/promises";
+import { join } from "path";
 
 const NoteResolver = {
   Query: {
@@ -85,6 +87,7 @@ const NoteResolver = {
       return note;
     },
   },
+  Upload: require("graphql-upload-ts").GraphQLUpload,
   Mutation: {
     async addNote(
       _: Note,
@@ -275,6 +278,21 @@ const NoteResolver = {
         });
       }
       return { status: "success", message: "all selected note is restored" };
+    },
+    async singleUpload(_: any, { file }: { file: any }) {
+      console.log(join(__dirname));
+      const { createReadStream, filename } = await file;
+      const stream = createReadStream();
+      const name = Math.floor(Math.random() * 10000 + 1);
+      const url = join(
+        __dirname,
+        `../../public/upload/${name}-${Date.now()}.jpg`
+      );
+      const out = require("fs").createWriteStream(url);
+      await stream.pipe(out);
+      await finished(out);
+      console.log(out);
+      return { status: "success" };
     },
   },
 };
