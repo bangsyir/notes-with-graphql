@@ -17,6 +17,7 @@ specifiers:
   express: ^4.18.2
   express-session: ^1.17.3
   graphql: ^16.6.0
+  graphql-upload-ts: ^2.0.5
   ioredis: ^5.2.5
   pg: ^8.8.0
   reflect-metadata: ^0.1.13
@@ -36,6 +37,7 @@ dependencies:
   express: 4.18.2
   express-session: 1.17.3
   graphql: 16.6.0
+  graphql-upload-ts: 2.0.5_graphql@16.6.0
   ioredis: 5.2.5
   pg: 8.8.0
   reflect-metadata: 0.1.13
@@ -792,6 +794,13 @@ packages:
       ieee754: 1.2.1
     dev: false
 
+  /busboy/1.6.0:
+    resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
+    engines: {node: '>=10.16.0'}
+    dependencies:
+      streamsearch: 1.1.0
+    dev: false
+
   /bytes/3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
@@ -1254,6 +1263,16 @@ packages:
     resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
     dev: false
     optional: true
+
+  /graphql-upload-ts/2.0.5_graphql@16.6.0:
+    resolution: {integrity: sha512-kcvWs1FU5fbGHLa1pijN87QzyY1N9u+FhBnevRcAJHw/F9KtIqMoZTuQQqjYZdZnM5dLat0HFUxVwAz3nyQ+gA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      graphql: '>=0.13.1'
+    dependencies:
+      busboy: 1.6.0
+      graphql: 16.6.0
+    dev: false
 
   /graphql/16.6.0:
     resolution: {integrity: sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==}
@@ -2116,6 +2135,11 @@ packages:
   /statuses/2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /streamsearch/1.1.0:
+    resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
+    engines: {node: '>=10.0.0'}
     dev: false
 
   /string-width/4.2.3:
