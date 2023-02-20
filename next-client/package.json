@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"npm run codegen\" \"next dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts -w"
   },
   "dependencies": {
     "@next/font": "13.1.4",
@@ -32,6 +32,7 @@
     "@graphql-codegen/typescript-operations": "^3.0.0",
     "@graphql-codegen/typescript-react-query": "^4.1.0",
     "autoprefixer": "^10.4.13",
+    "concurrently": "^7.6.0",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.4",
     "typescript": "4.9.4"
