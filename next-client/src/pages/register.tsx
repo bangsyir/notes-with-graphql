@@ -1,7 +1,6 @@
 import { useRegisterMutation } from "@/generated/generated";
 import formReducer from "@/reducer/formReducer";
 import graphqlRequestClient from "@/request/graphqlRequestClient";
-import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import React from "react";
 
