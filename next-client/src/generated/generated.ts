@@ -21,6 +21,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Upload: any;
 };
 
 export type AddNote = {
@@ -46,6 +47,7 @@ export type Mutation = {
   register?: Maybe<RegisterResponse>;
   restoreAllNotes?: Maybe<Response>;
   restoreNote?: Maybe<Scalars['Boolean']>;
+  singleUpload?: Maybe<Response>;
   updateNote?: Maybe<Note>;
 };
 
@@ -95,6 +97,11 @@ export type MutationRestoreAllNotesArgs = {
 
 export type MutationRestoreNoteArgs = {
   noteId?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationSingleUploadArgs = {
+  file: Scalars['Upload'];
 };
 
 
