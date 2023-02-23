@@ -11,6 +11,7 @@ import { Auth } from "../helpers/auth";
 import { MyContext } from "../type";
 import { finished } from "stream/promises";
 import { join } from "path";
+import { Image } from "../entity/Image";
 
 const NoteResolver = {
   Query: {
@@ -28,6 +29,9 @@ const NoteResolver = {
         take: take,
         skip: skip,
         order: { createdAt: "DESC" },
+        relations: {
+          images: true,
+        },
       });
       const count = await Note.count({
         where: {
@@ -76,12 +80,18 @@ const NoteResolver = {
       { noteId }: { noteId: number },
       { res, session }: MyContext
     ) => {
+      console.log(session);
       const auth = await Auth(session.sub, res);
 
-      const note = await Note.findOneBy({
-        id: noteId,
-        user: {
-          id: auth.id,
+      const note = await Note.find({
+        relations: {
+          images: true,
+        },
+        where: {
+          id: noteId,
+          user: {
+            id: auth.id,
+          },
         },
       });
       return note;
@@ -91,7 +101,7 @@ const NoteResolver = {
   Mutation: {
     async addNote(
       _: Note,
-      args: { input: { title: string; description: string } },
+      args: { input: { title: string; description: string }; files: any },
       { res, session }: MyContext
     ) {
       const errors = {
@@ -115,6 +125,30 @@ const NoteResolver = {
       note.description = args.input.description;
       note.user = auth;
       await note.save();
+
+      try {
+        for (var i = 0; i < args.files.length; i++) {
+          const { createReadStream, filename } = await args.files[i];
+          const stream = createReadStream();
+          const name = Math.floor(Math.random() * 10000 + 1);
+          const url = join(
+            __dirname,
+            `../../public/upload/${name}-${Date.now()}.jpg`
+          );
+
+          const out = require("fs").createWriteStream(url);
+          await stream.pipe(out);
+          await finished(out);
+
+          const image = new Image();
+          image.url = `${name}-${Date.now()}.jpg`;
+          image.note = note;
+          await image.save();
+        }
+      } catch (err) {
+        console.log("File upload failed", err);
+        return { status: "failed" };
+      }
       return { note };
     },
     async updateNote(
@@ -281,7 +315,7 @@ const NoteResolver = {
     },
     async singleUpload(_: any, { file }: { file: any }) {
       console.log(join(__dirname));
-      const { createReadStream, filename } = await file;
+      const { createReadStream } = await file;
       const stream = createReadStream();
       const name = Math.floor(Math.random() * 10000 + 1);
       const url = join(
@@ -291,7 +325,7 @@ const NoteResolver = {
       const out = require("fs").createWriteStream(url);
       await stream.pipe(out);
       await finished(out);
-      console.log(out);
+      // console.log(out);
       return { status: "success" };
     },
   },
