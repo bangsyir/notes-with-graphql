@@ -6,9 +6,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Image } from "./Image";
 import { User } from "./User";
 
 @Entity()
@@ -28,6 +30,9 @@ export class Note extends BaseEntity {
   @ManyToOne(() => User, (user) => user.notes, { onDelete: "CASCADE" })
   @JoinColumn({ name: "user_id" })
   user!: User;
+
+  @OneToMany(() => Image, (image) => image.note)
+  images!: Image[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;
