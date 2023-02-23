@@ -19,6 +19,7 @@ import User from "./schema/user";
 import { MyContext } from "./type";
 import { __prod__ } from "./constants";
 import { graphqlUploadExpress } from "graphql-upload-ts";
+import path from "path";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ async function main() {
     });
   // require logic integratting with express
   const app = express();
+  app.use(express.static(path.join(__dirname, "../public")));
   // our  httpServer handles incoming requrests to our express app.
   // below, we tell apollo server to "drain" this httpserver
   // enabling our servers to shutdown gracefully
