@@ -40,7 +40,7 @@ const Note = `#graphql
     errors: Error
   }
   type Mutation {
-    addNote(input:NoteInput): AddNote
+    addNote(input:NoteInput, files: [Upload]): AddNote
     updateNote(noteId: Int, title: String, description: String): Note
     deleteNote(noteId: Int): Response
     deleteNotesMany(noteIds:[Int]): Response
