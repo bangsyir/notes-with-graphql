@@ -4,12 +4,19 @@ const GRAPHQL_ENDPOINT = "http://localhost:4000/graphql" as string;
 const graphqlRequestClient = new GraphQLClient(
   "http://localhost:4000/graphql",
   {
-    // jsonSerializer: {
-    //   parse: JSON.parse,
-    //   stringify: JSON.stringify,
-    // },
     credentials: "include",
     mode: "cors",
+  }
+);
+
+export const graphqlRequestClientWithFile = new GraphQLClient(
+  "http://localhost:4000/graphql",
+  {
+    credentials: "include",
+    mode: "cors",
+    headers: {
+      "Apollo-Require-Preflight": "true",
+    },
   }
 );
 
