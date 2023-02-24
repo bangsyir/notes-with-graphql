@@ -36,6 +36,9 @@ async function main() {
   // require logic integratting with express
   const app = express();
   app.use(express.static(path.join(__dirname, "../public")));
+  app.get("/", async (req, res) => {
+    res.send("hello");
+  });
   // our  httpServer handles incoming requrests to our express app.
   // below, we tell apollo server to "drain" this httpserver
   // enabling our servers to shutdown gracefully
@@ -108,4 +111,5 @@ async function main() {
 // run entire app
 main().catch((err) => {
   console.log(err);
+  console.log("test")
 });
