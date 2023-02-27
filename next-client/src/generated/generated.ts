@@ -53,6 +53,7 @@ export type Mutation = {
 
 
 export type MutationAddNoteArgs = {
+  files?: InputMaybe<Array<InputMaybe<Scalars['Upload']>>>;
   input?: InputMaybe<NoteInput>;
 };
 
