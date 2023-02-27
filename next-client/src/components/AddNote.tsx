@@ -17,6 +17,7 @@ export default function AddNote({
   addNoteModal: boolean;
   setAddNoteModal: (value: boolean) => void;
 }) {
+  const [imagesPreview, setImagesPreview] = React.useState<string[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const [errors, setErrors] = React.useState<Error>();
@@ -47,6 +48,27 @@ export default function AddNote({
       },
     });
   }
+
+  function imageHandler(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const files = e.target.files;
+    if (files) {
+      if (files.length > 2) {
+        e.target.value = "";
+        setImagesPreview([]);
+        return alert("you can upload only 2 images");
+      }
+      for (var i = 0; i < 2; i++) {
+        const reader = new FileReader();
+        reader.readAsDataURL(files[i]);
+        reader.onloadend = () => {
+          const dataUrl = reader.result as string;
+          console.log(dataUrl);
+          setImagesPreview((old) => [...old, dataUrl]);
+        };
+      }
+    }
+  }
   return (
     <div
       className={`flex items-center justify-center ${
@@ -72,6 +94,22 @@ export default function AddNote({
             {!isLoading && errors && errors.title && (
               <small className="text-red-500">{errors.title}</small>
             )}
+            <div>
+              <input type="file" multiple onChange={imageHandler} />
+              {imagesPreview.length !== 0 && (
+                <div className="flex gap-4">
+                  {imagesPreview.map((image, i) => (
+                    <img
+                      src={image}
+                      key={i}
+                      alt="images preview"
+                      height={100}
+                      width={100}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
             <textarea
               name="description"
               id="description"
