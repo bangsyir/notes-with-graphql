@@ -6,7 +6,10 @@ import cors from "cors";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
 import { json } from "body-parser";
 import Redis from "ioredis";
 import session from "express-session";
@@ -56,10 +59,9 @@ async function main() {
     cache: "bounded",
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
-      ApolloServerPluginLandingPageLocalDefault({
-        footer: false,
-        embed: false,
-      }),
+      process.env.NODE_ENV === "production"
+        ? ApolloServerPluginLandingPageProductionDefault()
+        : ApolloServerPluginLandingPageLocalDefault({ embed: false }),
     ],
     includeStacktraceInErrorResponses: true,
   });
@@ -93,7 +95,7 @@ async function main() {
       resave: false,
       saveUninitialized: false,
     }),
-    json(),
+    json({ limit: "50mb" }),
 
     // expressMiddlware accept the same arguments:
     // an Apollo Server instance and optional configuration options
@@ -101,6 +103,7 @@ async function main() {
       context: async ({ req, res }) => ({ req, res, session: req.session }),
     })
   );
+
   // modified server startup
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 4000 }, resolve)
@@ -109,7 +112,4 @@ async function main() {
   console.log(`🚀 Server ready at http://localhost:4000/graphql`);
 }
 // run entire app
-main().catch((err) => {
-  console.log(err);
-  console.log("test")
-});
+main();
