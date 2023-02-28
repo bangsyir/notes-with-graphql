@@ -19,7 +19,10 @@ export class Image extends BaseEntity {
   @Column({ type: String, nullable: false })
   url!: string;
 
-  @ManyToOne(() => Note, (note) => note.images)
+  @ManyToOne(() => Note, (note) => note.images, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "note_id" })
   note!: Note;
 
