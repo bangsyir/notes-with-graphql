@@ -232,6 +232,7 @@ export type GetDeletedNotesQuery = { __typename?: 'Query', getDeletedNotes?: { _
 
 export type AddNoteMutationVariables = Exact<{
   input?: InputMaybe<NoteInput>;
+  files?: InputMaybe<Array<InputMaybe<Scalars['Upload']>> | InputMaybe<Scalars['Upload']>>;
 }>;
 
 
@@ -392,8 +393,8 @@ useGetDeletedNotesQuery.getKey = (variables?: GetDeletedNotesQueryVariables) => 
 
 useGetDeletedNotesQuery.fetcher = (client: GraphQLClient, variables?: GetDeletedNotesQueryVariables, headers?: RequestInit['headers']) => fetcher<GetDeletedNotesQuery, GetDeletedNotesQueryVariables>(client, GetDeletedNotesDocument, variables, headers);
 export const AddNoteDocument = `
-    mutation AddNote($input: NoteInput) {
-  addNote(input: $input) {
+    mutation AddNote($input: NoteInput, $files: [Upload]) {
+  addNote(input: $input, files: $files) {
     errors {
       title
       description
