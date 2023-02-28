@@ -31,7 +31,10 @@ export class Note extends BaseEntity {
   @JoinColumn({ name: "user_id" })
   user!: User;
 
-  @OneToMany(() => Image, (image) => image.note)
+  @OneToMany(() => Image, (image) => image.note, {
+    eager: true,
+    onDelete: "CASCADE",
+  })
   images!: Image[];
 
   @CreateDateColumn({ name: "created_at" })
