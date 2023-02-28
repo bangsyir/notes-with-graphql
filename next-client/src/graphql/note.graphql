@@ -29,8 +29,8 @@ query GetDeletedNotes($page: Int) {
   }
 }
 
-mutation AddNote($input: NoteInput) {
-  addNote(input: $input) {
+mutation AddNote($input: NoteInput, $files: [Upload]) {
+  addNote(input: $input, files: $files) {
     errors {
       title
       description
