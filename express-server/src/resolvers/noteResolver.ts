@@ -80,10 +80,9 @@ const NoteResolver = {
       { noteId }: { noteId: number },
       { res, session }: MyContext
     ) => {
-      console.log(session);
       const auth = await Auth(session.sub, res);
 
-      const note = await Note.find({
+      const note = await Note.findOne({
         relations: {
           images: true,
         },
@@ -130,18 +129,15 @@ const NoteResolver = {
         for (var i = 0; i < args.files.length; i++) {
           const { createReadStream, filename } = await args.files[i];
           const stream = createReadStream();
-          const name = Math.floor(Math.random() * 10000 + 1);
-          const url = join(
-            __dirname,
-            `../../public/upload/${name}-${Date.now()}.jpg`
-          );
+          const name = `${Math.floor(Math.random() * 10000 + 1)}-${Date.now()}`;
+          const url = join(__dirname, `../../public/upload/${name}.jpg`);
 
           const out = require("fs").createWriteStream(url);
           await stream.pipe(out);
           await finished(out);
 
           const image = new Image();
-          image.url = `${name}-${Date.now()}.jpg`;
+          image.url = `${name}.jpg`;
           image.note = note;
           await image.save();
         }
@@ -238,18 +234,34 @@ const NoteResolver = {
       };
     },
     async deleteNotePermanent(parent: Note, args: { noteId: number }) {
-      const remove = await conn
-        .getRepository(Note)
-        .createQueryBuilder("notes")
-        .delete()
-        .where("id = :noteId", { noteId: args.noteId })
-        .execute();
+      const images = await Image.find({
+        relations: { note: true },
+        withDeleted: true,
+        where: [
+          {
+            note: {
+              id: args.noteId,
+            },
+          },
+        ],
+      });
+      if (images.length !== 0) {
+        images.map((image) => {
+          require("fs").unlinkSync(
+            join(__dirname, `../../public/upload/${image.url}`)
+          );
+        });
+      }
+      const remove = await Note.delete({
+        id: args.noteId,
+      });
       if (remove.affected === 0) {
         return ErrorResponse({
           message: `note with id ${args.noteId} not found`,
           status: 400,
         });
       }
+
       return { status: "success", message: "note is deleted" };
     },
     async deleteNotesManyPermanent(
@@ -258,6 +270,19 @@ const NoteResolver = {
       { res, session }: MyContext
     ) {
       const auth = await Auth(session.sub, res);
+      const images = await Image.find({
+        withDeleted: true,
+        where: { note: { id: noteIds } },
+      });
+
+      if (images.length !== 0) {
+        images.map((image) => {
+          // (__dirname, `../../public/upload/${name}.jpg`);
+          require("fs").unlinkSync(
+            join(__dirname, `../../public/upload/${image.url}`)
+          );
+        });
+      }
       const remove = await conn
         .createQueryBuilder()
         .delete()
