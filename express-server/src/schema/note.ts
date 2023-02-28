@@ -1,10 +1,17 @@
 const Note = `#graphql
 
   scalar Upload
+  type Image {
+    id: ID!
+    url: String
+    createdAt: String
+    updatedAt: String
+  }
   type Note {
     id: ID!
     title: String
     description: String
+    images: [Image]
     createdAt: String
     updatedAt: String
     deletedAt: String
