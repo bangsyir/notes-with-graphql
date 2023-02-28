@@ -5,7 +5,7 @@ import {
   useGetNotesQuery,
 } from "@/generated/generated";
 import formReducer from "@/reducer/formReducer";
-import graphqlRequestClient from "@/request/graphqlRequestClient";
+import { graphqlRequestClientWithFile } from "@/request/graphqlRequestClient";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { FormEvent, useRef } from "react";
 import { toast } from "react-toastify";
@@ -18,34 +18,38 @@ export default function AddNote({
   setAddNoteModal: (value: boolean) => void;
 }) {
   const [imagesPreview, setImagesPreview] = React.useState<string[]>([]);
+  const [filesUpload, setFilesUpload] = React.useState([]) as any;
   const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = React.useReducer(formReducer, {});
   const [errors, setErrors] = React.useState<Error>();
   const queryClient = useQueryClient();
-  const { isLoading, mutate } = useAddNoteMutation(graphqlRequestClient, {
-    onSuccess(data: AddNoteMutation) {
-      toast("note is success to create!", {
-        type: "success",
-        position: "top-right",
-      });
-      queryClient.refetchQueries(useGetNotesQuery.getKey());
-      setAddNoteModal(false);
-      setErrors({});
-      formRef.current?.reset();
-    },
-    onError(error: any) {
-      setErrors(error?.response?.errors[0].extensions.data);
-    },
-  });
+  const { isLoading, mutate, variables } = useAddNoteMutation(
+    graphqlRequestClientWithFile,
+    {
+      onSuccess(data: AddNoteMutation) {
+        toast("note is success to create!", {
+          type: "success",
+          position: "top-right",
+        });
+        queryClient.refetchQueries(useGetNotesQuery.getKey());
+        setAddNoteModal(false);
+        setErrors({});
+        formRef.current?.reset();
+      },
+      onError(error: any) {
+        setErrors(error?.response?.errors[0].extensions.data);
+      },
+    }
+  );
 
   function createNoteHandler(e: FormEvent) {
     e.preventDefault();
-    console.log(formData.title);
     mutate({
       input: {
         title: formData.title || "",
         description: formData.description || "",
       },
+      files: filesUpload,
     });
   }
 
@@ -58,13 +62,15 @@ export default function AddNote({
         setImagesPreview([]);
         return alert("you can upload only 2 images");
       }
-      for (var i = 0; i < 2; i++) {
+      const image = Array.from(files);
+      setFilesUpload(image);
+      setImagesPreview([]);
+      for (var i = 0; i < files.length; i++) {
         const reader = new FileReader();
         reader.readAsDataURL(files[i]);
         reader.onloadend = () => {
-          const dataUrl = reader.result as string;
-          console.log(dataUrl);
-          setImagesPreview((old) => [...old, dataUrl]);
+          const imageUrl = reader.result as string;
+          setImagesPreview((old) => [...old, imageUrl]);
         };
       }
     }
