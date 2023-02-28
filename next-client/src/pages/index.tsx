@@ -34,12 +34,12 @@ export default function Home(
     { page: Number(router.query.page) },
     {
       onError(error: any) {
-        if (error.response.status === 401) {
+        if (error.response?.status === 401) {
           queryClient.clear();
           router.push("/login");
         }
       },
-      initialData: props.dehydratedState.queries[0].state,
+      initialData: props.dehydratedState.queries[0]?.state,
       keepPreviousData: true,
     }
   );
