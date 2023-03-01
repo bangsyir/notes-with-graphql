@@ -41,7 +41,8 @@ export default function Login() {
             </div>
             {error && isLoading == false && (
               <div className="bg-red-500 text-white border rounded-md px-2 py-1">
-                {error.response.errors[0].message}
+                {error.response?.errors[0].message ||
+                  "Opss we have hard time, please come later."}
               </div>
             )}
             <form
