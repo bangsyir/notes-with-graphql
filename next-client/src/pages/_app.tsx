@@ -9,6 +9,7 @@ import {
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default function App({
   Component,
@@ -16,11 +17,13 @@ export default function App({
 }: AppProps<{ dehydrateState: DehydratedState }>) {
   const [queryClient] = React.useState(() => new QueryClient());
   return (
-    <QueryClientProvider client={queryClient}>
-      <Hydrate state={pageProps.dehydrateState}>
-        <Component {...pageProps} />
-        <ToastContainer />
-      </Hydrate>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Hydrate state={pageProps.dehydrateState}>
+          <Component {...pageProps} />
+          <ToastContainer />
+        </Hydrate>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
