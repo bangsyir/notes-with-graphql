@@ -29,7 +29,7 @@ export default function Home(
   }>();
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { data, isLoading } = useGetNotesQuery(
+  const { data, isLoading, error } = useGetNotesQuery(
     graphqlRequestClient,
     { page: Number(router.query.page) },
     {
@@ -39,7 +39,7 @@ export default function Home(
           router.push("/login");
         }
       },
-      initialData: props.dehydratedState.queries[0]?.state,
+      initialData: props.dehydratedState?.queries[0]?.state,
       keepPreviousData: true,
     }
   );
@@ -101,10 +101,6 @@ export default function Home(
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layouts>
-        {isLoading && <div className="text-center">Loading....</div>}
-        {data?.getNotes?.notes?.length === 0 && (
-          <div className="text-center">NO NOTES</div>
-        )}
         <div className="flex flex-col gap-4 pt-4 mx-4">
           <div className="flex items-center gap-4">
             <span className="font-bold text-lg">Home</span>
@@ -131,73 +127,86 @@ export default function Home(
               {ids.length > 1 ? "move all to trash" : "move to trash"}
             </button>
           </div>
-          {data?.getNotes?.notes?.map((note) => (
-            <div
-              key={note?.id}
-              className="flex justify-between items-start border rounded-md p-2"
-            >
-              <div className="flex gap-2">
-                <div>
-                  <input
-                    type="checkbox"
-                    value={note?.id}
-                    checked={ids.includes(Number(note?.id))}
-                    className="accent-orange-300"
-                    onChange={markCheckboxHandler}
-                  />
-                </div>
-                <div>
-                  <div className="text-medium font-bold">{note?.title}</div>
-                  <div>{note?.description}</div>
-                  <small className="text-gray-500">
-                    {moment(Number(note?.createdAt)).format("dddd DD/MM/YYYY")}
-                  </small>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  className="border rounded-md px-2 bg-green-500 text-white"
-                  onClick={(e) => {
-                    const data = note;
-                    openEditHandler(e, data);
-                  }}
+          {isLoading && <div className="text-center">Loading....</div>}
+          {data?.getNotes?.notes?.length === 0 && (
+            <div className="text-center">NO NOTES</div>
+          )}
+          {data && (
+            <>
+              {data?.getNotes?.notes?.map((note) => (
+                <div
+                  key={note?.id}
+                  className="flex justify-between items-start border rounded-md p-2"
                 >
-                  edit
-                </button>
-                <button
-                  type="submit"
-                  className="border rounded-md px-2 bg-red-500 text-white"
-                  onClick={() =>
-                    deleteNote.mutate({ noteId: Number(note?.id) })
-                  }
+                  <div className="flex gap-2">
+                    <div>
+                      <input
+                        type="checkbox"
+                        value={note?.id}
+                        checked={ids.includes(Number(note?.id))}
+                        className="accent-orange-300"
+                        onChange={markCheckboxHandler}
+                      />
+                    </div>
+                    <div>
+                      <div className="text-medium font-bold">{note?.title}</div>
+                      <div>{note?.description}</div>
+                      <small className="text-gray-500">
+                        {moment(Number(note?.createdAt)).format(
+                          "dddd DD/MM/YYYY"
+                        )}
+                      </small>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      className="border rounded-md px-2 bg-green-500 text-white"
+                      onClick={(e) => {
+                        const data = note;
+                        openEditHandler(e, data);
+                      }}
+                    >
+                      edit
+                    </button>
+                    <button
+                      type="submit"
+                      className="border rounded-md px-2 bg-red-500 text-white"
+                      onClick={() =>
+                        deleteNote.mutate({ noteId: Number(note?.id) })
+                      }
+                    >
+                      Move to trash
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <div className="flex gap-4 justify-center">
+                <Link
+                  href={`?page=${data?.getNotes?.prev}`}
+                  className={`border px-2 rounded-md hover:shadow-md ${
+                    data?.getNotes?.prev === null &&
+                    "pointer-events-none bg-gray-200"
+                  }`}
                 >
-                  Move to trash
-                </button>
+                  <span>Prev</span>
+                </Link>
+                <span>{router.query.page || 1}</span>
+                <Link
+                  href={`?page=${data?.getNotes?.next}`}
+                  className={`border px-2 rounded-md hover:shadow-md ${
+                    data?.getNotes?.next === null &&
+                    "pointer-events-none bg-gray-200"
+                  }`}
+                >
+                  <span>Next</span>
+                </Link>
               </div>
-            </div>
-          ))}
-          <div className="flex gap-4 justify-center">
-            <Link
-              href={`?page=${data?.getNotes?.prev}`}
-              className={`border px-2 rounded-md hover:shadow-md ${
-                data?.getNotes?.prev === null &&
-                "pointer-events-none bg-gray-200"
-              }`}
-            >
-              <span>Prev</span>
-            </Link>
-            <span>{router.query.page || 1}</span>
-            <Link
-              href={`?page=${data?.getNotes?.next}`}
-              className={`border px-2 rounded-md hover:shadow-md ${
-                data?.getNotes?.next === null &&
-                "pointer-events-none bg-gray-200"
-              }`}
-            >
-              <span>Next</span>
-            </Link>
-          </div>
+            </>
+          )}
+          {error && (
+            <div className="text-center font-bold text-xl">{error.message}</div>
+          )}
         </div>
         <EditNote
           show={editNoteModal}
