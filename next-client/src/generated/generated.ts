@@ -36,6 +36,14 @@ export type Error = {
   title?: Maybe<Scalars['String']>;
 };
 
+export type Image = {
+  __typename?: 'Image';
+  createdAt?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  updatedAt?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addNote?: Maybe<AddNote>;
@@ -118,6 +126,7 @@ export type Note = {
   deletedAt?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  images?: Maybe<Array<Maybe<Image>>>;
   title?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
 };
