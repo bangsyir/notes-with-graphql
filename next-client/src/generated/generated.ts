@@ -225,6 +225,13 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
+export type GetNoteQueryVariables = Exact<{
+  noteId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetNoteQuery = { __typename?: 'Query', getNote?: { __typename?: 'Note', id: string, title?: string | null, description?: string | null, createdAt?: string | null, images?: Array<{ __typename?: 'Image', id: string, url?: string | null } | null> | null } | null };
+
 export type GetNotesQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
 }>;
@@ -326,6 +333,41 @@ export type RegisterMutationVariables = Exact<{
 export type RegisterMutation = { __typename?: 'Mutation', register?: { __typename?: 'RegisterResponse', status?: string | null, message?: string | null, errors?: { __typename?: 'RegisterError', name?: string | null, email?: string | null, password?: string | null } | null, user?: { __typename?: 'User', name?: string | null, email?: string | null } | null } | null };
 
 
+export const GetNoteDocument = `
+    query GetNote($noteId: Int) {
+  getNote(noteId: $noteId) {
+    id
+    title
+    description
+    images {
+      id
+      url
+    }
+    createdAt
+  }
+}
+    `;
+export const useGetNoteQuery = <
+      TData = GetNoteQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetNoteQueryVariables,
+      options?: UseQueryOptions<GetNoteQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetNoteQuery, TError, TData>(
+      variables === undefined ? ['GetNote'] : ['GetNote', variables],
+      fetcher<GetNoteQuery, GetNoteQueryVariables>(client, GetNoteDocument, variables, headers),
+      options
+    );
+useGetNoteQuery.document = GetNoteDocument;
+
+
+useGetNoteQuery.getKey = (variables?: GetNoteQueryVariables) => variables === undefined ? ['GetNote'] : ['GetNote', variables];
+;
+
+useGetNoteQuery.fetcher = (client: GraphQLClient, variables?: GetNoteQueryVariables, headers?: RequestInit['headers']) => fetcher<GetNoteQuery, GetNoteQueryVariables>(client, GetNoteDocument, variables, headers);
 export const GetNotesDocument = `
     query GetNotes($page: Int) {
   getNotes(page: $page) {

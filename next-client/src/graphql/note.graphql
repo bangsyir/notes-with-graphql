@@ -1,3 +1,16 @@
+query GetNote($noteId: Int) {
+  getNote(noteId: $noteId) {
+    id
+    title
+    description
+    images {
+      id
+      url
+    }
+    createdAt
+  }
+}
+
 query GetNotes($page: Int) {
   getNotes(page: $page) {
     page
