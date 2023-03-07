@@ -159,6 +159,12 @@ export default function Home(
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    <Link
+                      href={"/" + note?.id}
+                      className="border rounded-md px-2"
+                    >
+                      See
+                    </Link>
                     <button
                       type="submit"
                       className="border rounded-md px-2 bg-green-500 text-white"
